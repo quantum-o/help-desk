@@ -1,0 +1,45 @@
+package com.quantum.modmail.ticket;
+
+import com.quantum.modmail.common.response.ApiResponse;
+import com.quantum.modmail.ticket.dto.CreateTicketRequest;
+import com.quantum.modmail.ticket.dto.TicketResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/tickets")
+@RequiredArgsConstructor
+public class TicketController {
+    private final TicketService ticketService;
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@Valid @RequestBody CreateTicketRequest request, Authentication authentication) {
+        String email = authentication.getName();
+
+        TicketResponse response = ticketService.createTicket(request, email);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket created successfully", response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<Optional<List<TicketResponse>>>> my(Authentication authentication) {
+        String email = authentication.getName();
+
+        Optional<List<TicketResponse>> responses =  ticketService.getMyTickets(email);
+        return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", responses));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable UUID id, Authentication authentication) {
+        String email = authentication.getName();
+
+        TicketResponse response = ticketService.getTicket(id, email);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket retrieved successfully", response));
+    }
+}
