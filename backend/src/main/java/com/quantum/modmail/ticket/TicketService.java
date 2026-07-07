@@ -1,6 +1,7 @@
 package com.quantum.modmail.ticket;
 
 import com.quantum.modmail.common.exception.BusinessException;
+import com.quantum.modmail.ticket.dto.AssignTicketRequest;
 import com.quantum.modmail.ticket.dto.CreateTicketRequest;
 import com.quantum.modmail.ticket.dto.TicketResponse;
 import com.quantum.modmail.ticket.entity.Ticket;
@@ -8,6 +9,7 @@ import com.quantum.modmail.ticket.entity.TicketStatus;
 import com.quantum.modmail.user.entity.User;
 import com.quantum.modmail.user.entity.UserRole;
 import com.quantum.modmail.user.repository.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -86,5 +88,27 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .priority(ticket.getPriority())
                 .build();
+    }
+
+    public void assignTicket(@NotNull UUID ticketId, AssignTicketRequest request, String email) {
+        User adminUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+
+        if (adminUser.getRole() != UserRole.ADMIN) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to assign tickets");
+        }
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
+
+        User targetUser = userRepository.findById(request.getId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "Target user not found"));
+
+        if(targetUser.getRole() != UserRole.AGENT) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_USER_ROLE", "Target user must be an agent");
+        }
+
+        ticket.setAssignedTo(targetUser);
+        ticketRepository.save(ticket);
     }
 }

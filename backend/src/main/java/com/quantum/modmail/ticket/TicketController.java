@@ -1,6 +1,7 @@
 package com.quantum.modmail.ticket;
 
 import com.quantum.modmail.common.response.ApiResponse;
+import com.quantum.modmail.ticket.dto.AssignTicketRequest;
 import com.quantum.modmail.ticket.dto.CreateTicketRequest;
 import com.quantum.modmail.ticket.dto.TicketResponse;
 import jakarta.validation.Valid;
@@ -41,5 +42,17 @@ public class TicketController {
 
         TicketResponse response = ticketService.getTicket(id, email);
         return ResponseEntity.ok(ApiResponse.ok("Ticket retrieved successfully", response));
+    }
+
+    @PatchMapping("/{id}/assign")
+    public ResponseEntity<ApiResponse<String>> assign(
+            @PathVariable UUID id,
+            @RequestBody AssignTicketRequest request,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        ticketService.assignTicket(id, request, email);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket assigned successfully", null));
     }
 }
