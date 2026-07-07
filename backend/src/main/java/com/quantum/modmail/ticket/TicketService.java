@@ -4,6 +4,7 @@ import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.ticket.dto.AssignTicketRequest;
 import com.quantum.modmail.ticket.dto.CreateTicketRequest;
 import com.quantum.modmail.ticket.dto.TicketResponse;
+import com.quantum.modmail.ticket.dto.UpdateTicketRequest;
 import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketStatus;
 import com.quantum.modmail.user.entity.User;
@@ -111,4 +112,46 @@ public class TicketService {
         ticket.setAssignedTo(targetUser);
         ticketRepository.save(ticket);
     }
+
+    public TicketResponse updateTicket(@NotNull UUID ticketId, UpdateTicketRequest request, String email) {
+        User adminUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
+
+        boolean isAdmin = adminUser.getRole() == UserRole.ADMIN;
+        boolean isAssignedAgent = adminUser.getRole() == UserRole.AGENT
+                && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(adminUser.getId());
+
+        if (!isAdmin && !isAssignedAgent) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to update tickets");
+        }
+
+        if (request.getTitle() != null) {
+            ticket.setTitle(request.getTitle());
+        }
+        if (request.getDescription() != null) {
+            ticket.setDescription(request.getDescription());
+        }
+        if (request.getPriority() != null) {
+            ticket.setPriority(request.getPriority());
+        }
+        if (request.getStatus() != null) {
+            ticket.setStatus(request.getStatus());
+        }
+        
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        return TicketResponse.builder()
+                .id(savedTicket.getId())
+                .title(savedTicket.getTitle())
+                .description(savedTicket.getDescription())
+                .status(savedTicket.getStatus())
+                .priority(savedTicket.getPriority())
+                .build();
+    }
+//
+//    public TicketResponse closeTicket(UUID id, String email) {
+//    }
 }

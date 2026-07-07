@@ -4,6 +4,7 @@ import com.quantum.modmail.common.response.ApiResponse;
 import com.quantum.modmail.ticket.dto.AssignTicketRequest;
 import com.quantum.modmail.ticket.dto.CreateTicketRequest;
 import com.quantum.modmail.ticket.dto.TicketResponse;
+import com.quantum.modmail.ticket.dto.UpdateTicketRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,17 @@ public class TicketController {
 
         ticketService.assignTicket(id, request, email);
         return ResponseEntity.ok(ApiResponse.ok("Ticket assigned successfully", null));
+    }
+
+    @PatchMapping("/{id}/update")
+    public ResponseEntity<ApiResponse<TicketResponse>> update(
+            @PathVariable UUID id,
+            @RequestBody UpdateTicketRequest request,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        TicketResponse response = ticketService.updateTicket(id, request, email);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket updated successfully", response));
     }
 }
