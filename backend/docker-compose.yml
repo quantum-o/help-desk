@@ -1,0 +1,12 @@
+services:
+  database:
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgre
+      POSTGRES_PASSWORD: toor
+      POSTGRES_DB: modmail
+    volumes:
+      # Updated for PostgreSQL 18+ compatibility
+      - ./db-data:/var/lib/postgresql

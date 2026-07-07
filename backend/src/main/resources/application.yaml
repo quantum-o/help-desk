@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: modmail
+  datasource:
+    url: jdbc:postgresql://localhost:5432/modmail
+    username: postgre
+    password: toor
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
+  security:
+    user:
+      name: disabled
+jwt:
+  secret: very-very-very-very-very-very-secret-key
+  access-token-expiration: 300000
+  refresh-token-expiration: 300000
