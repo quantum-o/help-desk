@@ -25,6 +25,4 @@ public interface TicketMessageRepository extends JpaRepository<TicketMessage, UU
                                      @Param("createdAt") Instant createdAt,
                                      @Param("id") UUID id,
                                      Pageable pageable);
-
-    Window<TicketMessage> findByTicketOrderByCreatedAtDesc(Ticket ticket, ScrollPosition scrollPosition);
 }
