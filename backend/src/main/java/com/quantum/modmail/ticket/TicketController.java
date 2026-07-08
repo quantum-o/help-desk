@@ -5,7 +5,6 @@ import com.quantum.modmail.common.response.CursorResponse;
 import com.quantum.modmail.ticket.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -88,7 +87,7 @@ public class TicketController {
         Authentication authentication
     ) {
         String email = authentication.getName();
-        
+
 
         CursorResponse<TicketMessageResponse> response = ticketService.getMessages(id, email, cursor, size);
         return ResponseEntity.ok(ApiResponse.ok("Ticket messages retrieved successfully", response));

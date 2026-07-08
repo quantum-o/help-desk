@@ -4,8 +4,6 @@ import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.ScrollPosition;
-import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

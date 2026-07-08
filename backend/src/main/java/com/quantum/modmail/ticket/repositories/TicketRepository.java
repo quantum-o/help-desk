@@ -2,7 +2,6 @@ package com.quantum.modmail.ticket.repositories;
 
 import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.user.entity.User;
-import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
