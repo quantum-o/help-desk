@@ -1,12 +1,11 @@
 package com.quantum.modmail.ticket;
 
 import com.quantum.modmail.common.response.ApiResponse;
-import com.quantum.modmail.ticket.dto.AssignTicketRequest;
-import com.quantum.modmail.ticket.dto.CreateTicketRequest;
-import com.quantum.modmail.ticket.dto.TicketResponse;
-import com.quantum.modmail.ticket.dto.UpdateTicketRequest;
+import com.quantum.modmail.common.response.CursorResponse;
+import com.quantum.modmail.ticket.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +66,31 @@ public class TicketController {
 
         TicketResponse response = ticketService.updateTicket(id, request, email);
         return ResponseEntity.ok(ApiResponse.ok("Ticket updated successfully", response));
+    }
+
+    @PostMapping("/{id}/messages")
+    public ResponseEntity<ApiResponse<TicketMessageResponse>> post(
+            @PathVariable UUID id,
+            @Valid @RequestBody SendTicketMessageRequest request,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        TicketMessageResponse response = ticketService.addMessage(id, request, email);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket message sent successfully", response));
+    }
+
+    @GetMapping("/{id}/messages")
+    public ResponseEntity<ApiResponse<CursorResponse<TicketMessageResponse>>> getMessages(
+        @PathVariable UUID id,
+        @RequestParam(required = false) String cursor,
+        @RequestParam(defaultValue = "20") int size,
+        Authentication authentication
+    ) {
+        String email = authentication.getName();
+        
+
+        CursorResponse<TicketMessageResponse> response = ticketService.getMessages(id, email, cursor, size);
+        return ResponseEntity.ok(ApiResponse.ok("Ticket messages retrieved successfully", response));
     }
 }
