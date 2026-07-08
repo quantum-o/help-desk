@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, UUID> {
-    public Optional<List<Ticket>> findByCreatedBy(User createdBy);
+    Optional<List<Ticket>> findByCreatedBy(User createdBy);
 
-    public Optional<List<Ticket>> findByAssignedTo(User assignedTo);
+    Optional<List<Ticket>> findByAssignedTo(User assignedTo);
 }
