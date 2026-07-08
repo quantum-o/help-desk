@@ -1,10 +1,3 @@
 package com.quantum.modmail.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class AuthResponse {
-    private String accessToken;
-}
+public record AuthResponse (String accessToken) {}

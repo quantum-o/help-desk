@@ -21,12 +21,12 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthResponse register(RegisterRequest request) {
-        String email = request.getEmail();
+        String email = request.email();
         if (userRepository.existsByEmail(email)) {
             throw new BusinessException(HttpStatus.CONFLICT, "USER_EMAIL_ALREADY_EXISTS", "Email is already in use");
         }
 
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        String hashedPassword = passwordEncoder.encode(request.password());
 
 
         User user = User.builder().email(email)
@@ -44,10 +44,10 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid username or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new BusinessException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid username or password");
         }
 

@@ -37,9 +37,9 @@ public class TicketService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "User not found"));
 
         Ticket ticket = Ticket.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .priority(request.getPriority())
+                .title(request.title())
+                .description(request.description())
+                .priority(request.priority())
                 .status(TicketStatus.OPEN)
                 .createdBy(ticketCreator)
                 .assignedTo(null)
@@ -109,7 +109,7 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
 
-        User targetUser = userRepository.findById(request.getId())
+        User targetUser = userRepository.findById(request.id())
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "Target user not found"));
 
         if(targetUser.getRole() != UserRole.AGENT) {
@@ -135,17 +135,17 @@ public class TicketService {
             throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to update tickets");
         }
 
-        if (request.getTitle() != null) {
-            ticket.setTitle(request.getTitle());
+        if (request.title() != null) {
+            ticket.setTitle(request.title());
         }
-        if (request.getDescription() != null) {
-            ticket.setDescription(request.getDescription());
+        if (request.description() != null) {
+            ticket.setDescription(request.description());
         }
-        if (request.getPriority() != null) {
-            ticket.setPriority(request.getPriority());
+        if (request.priority() != null) {
+            ticket.setPriority(request.priority());
         }
-        if (request.getStatus() != null) {
-            ticket.setStatus(request.getStatus());
+        if (request.status() != null) {
+            ticket.setStatus(request.status());
         }
         
         Ticket savedTicket = ticketRepository.save(ticket);

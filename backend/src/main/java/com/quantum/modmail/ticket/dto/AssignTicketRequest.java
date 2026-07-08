@@ -1,12 +1,10 @@
 package com.quantum.modmail.ticket.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 import java.util.UUID;
 
-@Data
-public class AssignTicketRequest {
-    @NotNull
-    private UUID id;
-}
+public record AssignTicketRequest (
+        @NotNull(message = "id cannot be null")
+       UUID id
+) {}

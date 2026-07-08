@@ -7,12 +7,11 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Data
 @Builder
-public class TicketResponse {
-    private UUID id;
-    private String title;
-    private String description;
-    private TicketStatus status;
-    private TicketPriority priority;
-}
+public record TicketResponse (
+        UUID id,
+        String title,
+        String description,
+        TicketStatus status,
+        TicketPriority priority
+) {}

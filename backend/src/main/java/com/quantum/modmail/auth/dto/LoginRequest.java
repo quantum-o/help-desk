@@ -1,14 +1,13 @@
 package com.quantum.modmail.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
-public class LoginRequest {
-    private String email;
+public record LoginRequest (
+        @NotBlank(message = "Email cannot be empty")
+        @Email(message = "Email should be valid")
+        String email,
 
-    @NotBlank
-    private String password;
-}
+        @NotBlank(message = "Password cannot be empty")
+        String password
+){}

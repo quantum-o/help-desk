@@ -3,16 +3,14 @@ package com.quantum.modmail.ticket.dto;
 import com.quantum.modmail.ticket.entity.TicketPriority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-@Data
-public class CreateTicketRequest {
-    @NotBlank
-    private String title;
+public record CreateTicketRequest (
+    @NotBlank(message = "Title cannot be empty")
+    String title,
 
-    @NotBlank
-    private String description;
+    @NotBlank(message = "Description cannot be empty")
+    String description,
 
-    @NotNull
-    private TicketPriority priority;
-}
+    @NotNull(message = "Priority cannot be null")
+    TicketPriority priority
+) {}
