@@ -7,23 +7,24 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useForm } from '@tanstack/react-form';
-import LoginRequest from '@/features/auth/types/LoginRequest';
-import useLogin from '@/features/auth/hooks/use-login';
 import { useRouter } from 'next/navigation';
+import RegisterRequest from '@/features/auth/types/RegisterRequest';
+import useRegister from '@/features/auth/hooks/use-register';
 
 export default function Page() {
-	const requestLogin = useLogin();
+	const requestLogin = useRegister();
 	const router = useRouter();
 	const form = useForm({
 		defaultValues: {
 			email: '',
 			password: '',
+			confirmPassword: '',
 		},
 		validators: {
-			onSubmit: LoginRequest,
+			onSubmit: RegisterRequest,
 		},
 		onSubmit: async (values) => {
 			const resp = await requestLogin.mutateAsync(values.value);
@@ -39,9 +40,9 @@ export default function Page() {
 				<div className="flex flex-col gap-6">
 					<Card>
 						<CardHeader>
-							<CardTitle>Login to your account</CardTitle>
+							<CardTitle>Register for your account</CardTitle>
 							<CardDescription>
-								Enter your email below to login to your account
+								Enter your details below to create an account
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -99,9 +100,35 @@ export default function Page() {
 											);
 										}}
 									/>
+									<form.Field
+										name="confirmPassword"
+										children={(field) => {
+											const isInvalid =
+												field.state.meta.isTouched && !field.state.meta.isValid;
+											return (
+												<Field data-invalid={isInvalid}>
+													<FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
+													<Input
+														id={field.name}
+														name={field.name}
+														type="password"
+														value={field.state.value}
+														onBlur={field.handleBlur}
+														onChange={(e) => field.handleChange(e.target.value)}
+														aria-invalid={isInvalid}
+														placeholder="••••••••"
+														required
+													/>
+												</Field>
+											);
+										}}
+									/>
 									<Field>
-										<Button type="submit">Login</Button>
+										<Button type="submit">Register</Button>
 									</Field>
+                                    <FieldDescription>
+                                        Already have an account? <a href="/login" className="text-indigo-500 hover:underline">Login here</a>.
+                                    </FieldDescription>
 								</FieldGroup>
 							</form>
 						</CardContent>
