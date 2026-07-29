@@ -1,5 +1,6 @@
 package com.quantum.modmail.security.config;
 
+import com.quantum.modmail.security.jwt.JwtAuthenticationEntryPoint;
 import com.quantum.modmail.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,10 +32,17 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .authorizeHttpRequests(auth -> auth.
                     requestMatchers("/auth/**").permitAll()
                     .anyRequest().authenticated()
             )
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .deleteCookies("refresh_token")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
