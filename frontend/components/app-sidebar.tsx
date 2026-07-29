@@ -44,8 +44,13 @@ export default function AppSidebar({ items }: AppSidebarProps) {
 								variant="outline"
 								className="bg-indigo-500 text-white hover:bg-indigo-600 transition-colors duration-200 justify-center"
 							>
-								<IconPlus />
-								Create Ticket
+								<Link
+									href="/tickets/new"
+									className="flex w-full items-center justify-center gap-2"
+								>
+									<IconPlus />
+									Create Ticket
+								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -55,7 +60,10 @@ export default function AppSidebar({ items }: AppSidebarProps) {
 						{items.map((item) => (
 							<SidebarMenuItem key={item.name}>
 								<SidebarMenuButton>
-									<Link href={item.url} className="flex w-full items-center gap-2">
+									<Link
+										href={item.url}
+										className="flex w-full items-center gap-2"
+									>
 										{item.icon}
 										{item.name}
 									</Link>
