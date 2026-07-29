@@ -38,7 +38,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<SidebarProvider>
 			<AppSidebar items={navList} />
-			<main>
+			<main className='w-full'>
 				<SidebarTrigger />
 				{children}
 			</main>
