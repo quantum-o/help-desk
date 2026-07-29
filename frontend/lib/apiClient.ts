@@ -10,6 +10,7 @@ const axiosClient = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    withCredentials: true,
 });
 
 axiosClient.interceptors.request.use((config) => {
@@ -17,23 +18,39 @@ axiosClient.interceptors.request.use((config) => {
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    console.log("Requesting with config:", config);
     return config;
 });
 
 axiosClient.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            refresh().then((data: ApiResponse<{ accessToken: string }>) => {
-                if (data.success) {
-                    useAuthStore.getState().login(data.data.accessToken);
-                    error.config.headers.Authorization = `Bearer ${data.data.accessToken}`;
-                    return axiosClient.request(error.config);
-                }
-            });
+    async (error) => {
+        if (error.response?.status !== 401) {
+            return Promise.reject(error);
         }
-        return Promise.reject(error);
+
+        if (error.config.url?.includes("/auth/refresh")) {
+            useAuthStore.getState().logout();
+            return Promise.reject(error);
+        }
+
+        try {
+            const data = await refresh();
+
+            if (!data.success) {
+                useAuthStore.getState().logout();
+                return Promise.reject(error);
+            }
+
+            useAuthStore.getState().login(data.data.accessToken);
+
+            error.config.headers.Authorization =
+                `Bearer ${data.data.accessToken}`;
+
+            return axiosClient.request(error.config);
+        } catch {
+            useAuthStore.getState().logout();
+            return Promise.reject(error);
+        }
     }
 );
 

@@ -1,6 +1,6 @@
 const page = () => {
   return (
-    <div>dashboard page</div>
+    <div>tickets page</div>
   )
 }
 

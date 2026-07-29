@@ -8,6 +8,8 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { logout } from '@/features/auth/api/logout';
+import useAuthStore from '@/features/auth/auth-store';
 import { SidebarItem } from '@/types/sidebar';
 import { IconLogout, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -17,6 +19,15 @@ export interface AppSidebarProps {
 }
 
 export default function AppSidebar({ items }: AppSidebarProps) {
+	const handleLogout = async () => {
+		try {
+			await logout();
+			useAuthStore().logout();
+		} catch (error) {
+			console.log('Error during logout:', error);
+		}
+	};
+
 	return (
 		<Sidebar>
 			<SidebarHeader>
@@ -44,8 +55,10 @@ export default function AppSidebar({ items }: AppSidebarProps) {
 						{items.map((item) => (
 							<SidebarMenuItem key={item.name}>
 								<SidebarMenuButton>
-									{item.icon}
-									<Link href={item.url}>{item.name}</Link>
+									<Link href={item.url} className="flex w-full items-center gap-2">
+										{item.icon}
+										{item.name}
+									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 						))}
@@ -56,9 +69,9 @@ export default function AppSidebar({ items }: AppSidebarProps) {
 				<SidebarGroup>
 					<SidebarMenu>
 						<SidebarMenuItem>
-							<SidebarMenuButton>
+							<SidebarMenuButton onClick={() => handleLogout()}>
 								<IconLogout />
-								<a href="/logout">Logout</a>
+								Logout
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>

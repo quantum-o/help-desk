@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../api/login";
 import useAuthStore from "../auth-store";
-import { ApiResponse } from "@/types/ApiResponse";
+import { LoginResponse } from "../types/LoginResponse";
 
 export default function useLogin() {
     return useMutation({
         mutationFn: login,
-        onSuccess: (data: ApiResponse<{ accessToken: string }>) => {
+        onSuccess: (data: LoginResponse) => {
             useAuthStore.getState().login(data.data.accessToken);
         }
     })

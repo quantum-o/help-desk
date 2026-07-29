@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import useMe from '@/features/auth/hooks/use-me';
 import { SidebarItem } from '@/types/sidebar';
 import { IconDashboard, IconTicket } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const navList: SidebarItem[] = [
@@ -20,20 +21,19 @@ const navList: SidebarItem[] = [
 ];
 
 const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
-	const me = useMe();
+	const router = useRouter();
+	const { data, isLoading, isError } = useMe();
+
 	useEffect(() => {
-		async function fetchMe() {
-			try {
-				me.refetch();
-				if (me.data?.success) {
-					console.log('User data fetched successfully:', me.data);
-				}
-			} catch (error) {
-				console.error('Error fetching user data:', error);
-			}
+		if (!isLoading && isError) {
+			console.log('User is not authenticated, redirecting to login page');
+			router.replace('/login');
 		}
-		fetchMe();
-	}, []);
+	}, [isLoading, isError, router]);
+
+	if (isLoading) {
+		return <div className="">Loading</div>;
+	}
 
 	return (
 		<SidebarProvider>

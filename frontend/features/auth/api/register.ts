@@ -1,5 +1,6 @@
 import axiosClient from "@/lib/apiClient";
 import RegisterRequest from "../types/RegisterRequest";
+import { LoginResponse } from "../types/LoginResponse";
 
 export async function register(data: RegisterRequest) {
     if (data.password !== data.confirmPassword) {
@@ -10,5 +11,5 @@ export async function register(data: RegisterRequest) {
         email: data.email,
         password: data.password,
     });
-    return response.data;
+    return response.data as LoginResponse;
 }

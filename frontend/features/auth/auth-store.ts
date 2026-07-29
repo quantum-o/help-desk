@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 type AuthStoreState = {
-    isAuthenticated: boolean;
     accessToken: string;
 }
 
@@ -13,15 +12,9 @@ type AuthStoreActions = {
 type AuthStore = AuthStoreState & AuthStoreActions;
 
 const useAuthStore = create<AuthStore>((set) => ({
-    isAuthenticated: false,
     accessToken: '',
-    user: {
-        id: '',
-        email: '',
-        role: '',
-    },
-    login: (accessToken: string) => set({ isAuthenticated: true, accessToken }),
-    logout: () => set({ isAuthenticated: false, accessToken: '' }),
+    login: (accessToken: string) => set({ accessToken }),
+    logout: () => set({ accessToken: '' }),
 }));
 
 export default useAuthStore;
