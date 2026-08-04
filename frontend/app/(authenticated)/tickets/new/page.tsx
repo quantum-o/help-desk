@@ -3,7 +3,12 @@
 import HeaderText from '@/components/header-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -12,28 +17,49 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import useCreateTicket from '@/features/tickets/hooks/use-create-ticket';
 import CreateNewTicket from '@/features/tickets/types/CreateNewTicket';
+import { TicketCategory, TicketPriority } from '@/features/tickets/types/enums';
 import { useForm } from '@tanstack/react-form';
+import { useRouter } from 'next/navigation';
 
-const Categories = ['Technical', 'Billing', 'General'];
+const Categories = Object.values(TicketCategory).filter(
+	(val) => !isNaN(Number(val)),
+) as TicketCategory[];
+
+const categoryLabels: Record<TicketCategory, string> = {
+	[TicketCategory.TECHNICAL]: 'Technical',
+	[TicketCategory.BILLING]: 'Billing',
+	[TicketCategory.GENERAL]: 'General',
+	[TicketCategory.OTHER]: 'Other',
+};
 
 const NewTicket = () => {
+	const createTicket = useCreateTicket();
+	const router = useRouter();
+
 	const form = useForm({
 		defaultValues: {
 			title: '',
-			category: '',
-			priority: 'medium',
+			category: TicketCategory.GENERAL,
+			priority: TicketPriority.MEDIUM,
 			description: '',
 		},
 		validators: {
 			onSubmit: CreateNewTicket,
 		},
 		onSubmit: async (values) => {
-			console.log('Form submitted with values:', values);
+			createTicket.mutate(values.value, {
+				onSuccess: (data) => {
+					// router.push(`/tickets/${data.id}`);
+				},
+				onError: (error) => {
+					console.error('Error creating ticket:', error);
+				},
+			});
 		},
 	});
 	return (
@@ -85,27 +111,31 @@ const NewTicket = () => {
 											return (
 												<Field data-invalid={isInvalid}>
 													<FieldLabel htmlFor={field.name}>Category</FieldLabel>
+													<FieldError errors={field.state.meta.errors} />
 													<Select
-														value={field.state.value}
+														value={
+															TicketCategory[
+																field.state.value as TicketCategory
+															]
+														}
 														onValueChange={(value) =>
-															field.handleChange(value || '')
+															field.handleChange(
+																Number(value) as TicketCategory,
+															)
 														}
 													>
-														<SelectTrigger
-															id={field.name}
-															name={field.name}
-															value={field.state.value}
-															onChange={() =>
-																field.handleChange(field.state.value)
-															}
-														>
-															{field.state.value || 'Select a category'}
+														<SelectTrigger id={field.name} name={field.name}>
+															{TicketCategory[field.state.value] ||
+																'Select a category'}
 														</SelectTrigger>
 														<SelectContent alignItemWithTrigger={false}>
 															<SelectGroup>
 																{Categories.map((category) => (
-																	<SelectItem key={category} value={category}>
-																		{category}
+																	<SelectItem
+																		key={category}
+																		value={category.toString()}
+																	>
+																		{categoryLabels[category]}
 																	</SelectItem>
 																))}
 															</SelectGroup>
@@ -122,27 +152,38 @@ const NewTicket = () => {
 												field.state.meta.isTouched && !field.state.meta.isValid;
 											return (
 												<Field data-invalid={isInvalid}>
-													<FieldLabel htmlFor={field.name}>Priority</FieldLabel>
+													<div className="inline-flex items-center gap-2">
+														<FieldLabel htmlFor={field.name}>
+															Priority
+														</FieldLabel>
+														<FieldError errors={field.state.meta.errors} />
+													</div>
 													<RadioGroup
-														defaultValue="medium"
+														defaultValue={TicketPriority.MEDIUM}
 														className="flex flex-row gap-2 items-center"
+														value={field.state.value.toString()}
+														onValueChange={(value) =>
+															field.handleChange(
+																Number(value) as TicketPriority,
+															)
+														}
 													>
 														<div>
 															<RadioGroupItem
-																value="low"
+																value={TicketPriority.LOW.toString()}
 																id="low"
 																className="peer sr-only hidden"
 															/>
 															<Label
 																htmlFor="low"
 																className="
-                                  inline-flex items-center gap-2
-                                  rounded-full border px-3 py-2
-                                  cursor-pointer
-                                  peer-data-checked:bg-primary/40
-                                  peer-data-checked:text-primary-foreground
-                                  peer-data-checked:border-primary
-                                "
+																	inline-flex items-center gap-2
+																	rounded-full border px-3 py-2
+																	cursor-pointer
+																	peer-data-checked:bg-primary/40
+																	peer-data-checked:text-primary-foreground
+																	peer-data-checked:border-primary
+																"
 															>
 																<div className="size-2 rounded-full bg-gray-500" />
 																Low
@@ -151,20 +192,20 @@ const NewTicket = () => {
 
 														<div>
 															<RadioGroupItem
-																value="medium"
+																value={TicketPriority.MEDIUM.toString()}
 																id="medium"
 																className="peer sr-only hidden"
 															/>
 															<Label
 																htmlFor="medium"
 																className="
-                                  inline-flex items-center gap-2
-                                  rounded-full border px-3 py-2
-                                  cursor-pointer
-                                  peer-data-checked:bg-primary/40
-                                  peer-data-checked:text-primary-foreground
-                                  peer-data-checked:border-primary
-                                "
+																	inline-flex items-center gap-2
+																	rounded-full border px-3 py-2
+																	cursor-pointer
+																	peer-data-checked:bg-primary/40
+																	peer-data-checked:text-primary-foreground
+																	peer-data-checked:border-primary
+																"
 															>
 																<div className="size-2 rounded-full bg-blue-500" />
 																Medium
@@ -173,20 +214,20 @@ const NewTicket = () => {
 
 														<div>
 															<RadioGroupItem
-																value="high"
+																value={TicketPriority.HIGH.toString()}
 																id="high"
 																className="peer sr-only hidden"
 															/>
 															<Label
 																htmlFor="high"
 																className="
-                                  inline-flex items-center gap-2
-                                  rounded-full border px-3 py-2
-                                  cursor-pointer
-                                  peer-data-checked:bg-primary/40
-                                  peer-data-checked:text-primary-foreground
-                                  peer-data-checked:border-primary
-                                "
+																	inline-flex items-center gap-2
+																	rounded-full border px-3 py-2
+																	cursor-pointer
+																	peer-data-checked:bg-primary/40
+																	peer-data-checked:text-primary-foreground
+																	peer-data-checked:border-primary
+																"
 															>
 																<div className="size-2 rounded-full bg-orange-500" />
 																High
@@ -195,20 +236,20 @@ const NewTicket = () => {
 
 														<div>
 															<RadioGroupItem
-																value="urgent"
+																value={TicketPriority.URGENT.toString()}
 																id="urgent"
 																className="peer sr-only hidden"
 															/>
 															<Label
 																htmlFor="urgent"
 																className="
-                                  inline-flex items-center gap-2
-                                  rounded-full border px-3 py-2
-                                  cursor-pointer
-                                  peer-data-checked:bg-primary/40
-                                  peer-data-checked:text-primary-foreground
-                                  peer-data-checked:border-primary
-                                "
+																	inline-flex items-center gap-2
+																	rounded-full border px-3 py-2
+																	cursor-pointer
+																	peer-data-checked:bg-primary/40
+																	peer-data-checked:text-primary-foreground
+																	peer-data-checked:border-primary
+																"
 															>
 																<div className="size-2 rounded-full bg-red-700" />
 																Urgent
@@ -230,6 +271,7 @@ const NewTicket = () => {
 												<FieldLabel htmlFor={field.name}>
 													Description
 												</FieldLabel>
+												<FieldError errors={field.state.meta.errors} />
 												<Textarea
 													id={field.name}
 													name={field.name}
