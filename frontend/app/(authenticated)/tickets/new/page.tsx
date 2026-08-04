@@ -54,7 +54,7 @@ const NewTicket = () => {
 		onSubmit: async (values) => {
 			createTicket.mutate(values.value, {
 				onSuccess: (data) => {
-					// router.push(`/tickets/${data.id}`);
+					router.push(`/tickets/${data.id}`);
 				},
 				onError: (error) => {
 					console.error('Error creating ticket:', error);
