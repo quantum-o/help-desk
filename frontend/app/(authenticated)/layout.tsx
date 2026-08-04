@@ -29,9 +29,6 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
 			redirect('/login');
 		}
 
-		if(!data?.success)
-			redirect('/login');
-
 		useAuthStore.getState().setUser(data?.data ?? null);
 	}, [isLoading, isError]);
 
