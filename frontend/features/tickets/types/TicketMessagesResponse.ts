@@ -1,4 +1,4 @@
-type TicketMesagesResponse = {
+export type TicketMessagesResponse = {
     id: string,
     senderId: string,
     senderEmail: string,

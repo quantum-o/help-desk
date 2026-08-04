@@ -7,6 +7,7 @@ export interface ITicket {
     category: TicketCategory;
     priority: TicketPriority;
     status: TicketStatus;
+    createdBy: string;
     createdAt: string;
     updatedAt: string;
 }

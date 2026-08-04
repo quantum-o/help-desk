@@ -15,6 +15,11 @@ export default function useCreateTicket() {
                         status: "success"
                     }
                 }
+
+                return {
+                    ...oldData,
+                    data: [...oldData.data, data]
+                };
             });
         }
     })
