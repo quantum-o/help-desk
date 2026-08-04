@@ -12,5 +12,6 @@ public record TicketResponse (
         String title,
         String description,
         TicketStatus status,
-        TicketPriority priority
+        TicketPriority priority,
+        UUID createdBy
 ) {}

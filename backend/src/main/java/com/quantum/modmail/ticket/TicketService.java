@@ -94,6 +94,7 @@ public class TicketService {
                 .description(ticket.getDescription())
                 .status(ticket.getStatus())
                 .priority(ticket.getPriority())
+                .createdBy(ticket.getCreatedBy().getId())
                 .build();
     }
 

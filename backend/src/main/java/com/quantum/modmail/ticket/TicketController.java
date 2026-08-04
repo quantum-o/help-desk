@@ -83,11 +83,10 @@ public class TicketController {
     public ResponseEntity<ApiResponse<CursorResponse<TicketMessageResponse>>> getMessages(
         @PathVariable UUID id,
         @RequestParam(required = false) String cursor,
-        @RequestParam(defaultValue = "20") int size,
+        @RequestParam(required = false, defaultValue = "20") int size,
         Authentication authentication
     ) {
         String email = authentication.getName();
-
 
         CursorResponse<TicketMessageResponse> response = ticketService.getMessages(id, email, cursor, size);
         return ResponseEntity.ok(ApiResponse.ok("Ticket messages retrieved successfully", response));
