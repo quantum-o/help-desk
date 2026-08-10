@@ -4,6 +4,7 @@ import com.quantum.modmail.ticket.entity.TicketPriority;
 import com.quantum.modmail.ticket.entity.TicketStatus;
 import lombok.Builder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Builder
@@ -13,5 +14,7 @@ public record TicketResponse (
         String description,
         TicketStatus status,
         TicketPriority priority,
-        UUID createdBy
+        UUID createdBy,
+        Instant createdAt,
+        Instant updatedAt
 ) {}

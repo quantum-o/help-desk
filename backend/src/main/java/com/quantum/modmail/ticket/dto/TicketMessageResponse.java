@@ -10,6 +10,7 @@ public record TicketMessageResponse(UUID id,
                                     UUID senderId,
                                     String senderEmail,
                                     String message,
-                                    Instant createdAt
+                                    Instant createdAt,
+                                    Instant updatedAt
 ) {
 }

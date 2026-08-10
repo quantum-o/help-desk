@@ -1,5 +1,6 @@
 package com.quantum.modmail.user.entity;
 
+import com.quantum.modmail.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Audited;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -34,10 +35,4 @@ public class User {
 
     @Column(nullable = false)
     private boolean active;
-
-    @Audited
-    private Instant createdAt;
-
-    @Audited
-    private Instant updatedAt;
 }

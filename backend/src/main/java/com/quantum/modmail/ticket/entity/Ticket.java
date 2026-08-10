@@ -1,5 +1,6 @@
 package com.quantum.modmail.ticket.entity;
 
+import com.quantum.modmail.common.entity.BaseEntity;
 import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "tickets")
-public class Ticket {
+public class Ticket extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

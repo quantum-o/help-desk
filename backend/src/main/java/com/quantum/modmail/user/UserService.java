@@ -21,6 +21,6 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
 
-        return new MeResponse(user.getId(), user.getEmail(), user.getRole());
+        return new MeResponse(user.getId(), user.getEmail(), user.getRole(), user.getCreatedAt(), user.getUpdatedAt());
     }
 }

@@ -44,14 +44,17 @@ public class TicketService {
                 .assignedTo(null)
                 .build();
 
-        ticketRepository.save(ticket);
+        Ticket createdTicket = ticketRepository.save(ticket);
 
         return TicketResponse.builder()
-                .id(ticket.getId())
-                .title(ticket.getTitle())
-                .description(ticket.getDescription())
-                .status(ticket.getStatus())
-                .priority(ticket.getPriority())
+                .id(createdTicket.getId())
+                .title(createdTicket.getTitle())
+                .description(createdTicket.getDescription())
+                .status(createdTicket.getStatus())
+                .priority(createdTicket.getPriority())
+                .createdBy(ticketCreator.getId())
+                .createdAt(ticket.getCreatedAt())
+                .updatedAt(ticket.getUpdatedAt())
                 .build();
     }
 
@@ -67,6 +70,8 @@ public class TicketService {
                                 .description(ticket.getDescription())
                                 .status(ticket.getStatus())
                                 .priority(ticket.getPriority())
+                                .createdAt(ticket.getCreatedAt())
+                                .updatedAt(ticket.getUpdatedAt())
                                 .build())
                         .toList());
     }
@@ -95,6 +100,8 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .priority(ticket.getPriority())
                 .createdBy(ticket.getCreatedBy().getId())
+                .createdAt(ticket.getCreatedAt())
+                .updatedAt(ticket.getUpdatedAt())
                 .build();
     }
 
@@ -156,6 +163,8 @@ public class TicketService {
                 .description(savedTicket.getDescription())
                 .status(savedTicket.getStatus())
                 .priority(savedTicket.getPriority())
+                .createdAt(ticket.getCreatedAt())
+                .updatedAt(ticket.getUpdatedAt())
                 .build();
     }
 
@@ -180,7 +189,6 @@ public class TicketService {
                 .ticket(ticket)
                 .sender(user)
                 .message(request.message())
-                .createdAt(Instant.now())
                 .build();
 
         TicketMessage savedMessage = ticketMessageRepository.save(ticketMessage);
