@@ -27,7 +27,7 @@ import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
 
 const Categories = Object.values(TicketCategory).filter(
-	(val) => !isNaN(Number(val)),
+	(val) => isNaN(Number(val)),
 ) as TicketCategory[];
 
 const categoryLabels: Record<TicketCategory, string> = {
@@ -53,8 +53,8 @@ const NewTicket = () => {
 		},
 		onSubmit: async (values) => {
 			createTicket.mutate(values.value, {
-				onSuccess: (data) => {
-					router.push(`/tickets/${data.id}`);
+				onSuccess: (response) => {
+					router.push(`/tickets/${response.data.id}`);
 				},
 				onError: (error) => {
 					console.error('Error creating ticket:', error);
@@ -120,12 +120,12 @@ const NewTicket = () => {
 														}
 														onValueChange={(value) =>
 															field.handleChange(
-																Number(value) as TicketCategory,
+																value as TicketCategory,
 															)
 														}
 													>
 														<SelectTrigger id={field.name} name={field.name}>
-															{TicketCategory[field.state.value] ||
+															{categoryLabels[field.state.value as TicketCategory] ||
 																'Select a category'}
 														</SelectTrigger>
 														<SelectContent alignItemWithTrigger={false}>
@@ -164,7 +164,7 @@ const NewTicket = () => {
 														value={field.state.value.toString()}
 														onValueChange={(value) =>
 															field.handleChange(
-																Number(value) as TicketPriority,
+																value as TicketPriority,
 															)
 														}
 													>
