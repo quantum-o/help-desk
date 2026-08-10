@@ -13,17 +13,28 @@ import { Skeleton } from '@/components/ui/skeleton';
 import useGetTicketMessages from '@/features/tickets/hooks/use-get-messages';
 import useGetTicket from '@/features/tickets/hooks/use-get-ticket';
 import useSendMessage from '@/features/tickets/hooks/use-send-message';
-import { IconSend } from '@tabler/icons-react';
+import { IconChevronLeft, IconSend } from '@tabler/icons-react';
 import { useForm } from '@tanstack/react-form';
-import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { notFound, useParams } from 'next/navigation';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import z from 'zod';
 
 export default function Page() {
 	const params = useParams<{ id: string }>();
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+	const ticketResponse = useGetTicket(params.id);
+
+	if(ticketResponse.isError) {
+		notFound();
+	}
+
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
 		useGetTicketMessages(params.id);
-	const ticketData = useGetTicket(params.id);
+
+	if (isError) {
+		notFound();
+	}
+
 	const isAdmin = false;
 
 	const messagesRef = useRef<HTMLDivElement>(null);
@@ -90,19 +101,25 @@ export default function Page() {
 				<div className="flex flex-1 flex-col">
 					<div className="border-b px-6 py-5">
 						<div className="mb-2 flex items-center gap-2">
+							<Link href="/tickets">
+								<Button variant="ghost" size="sm">
+									<IconChevronLeft className="size-4" />
+								</Button>
+							</Link>
+
 							<div className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-600">
-								{ticketData.isLoading ? (
+								{ticketResponse.isLoading ? (
 									<Skeleton className="h-4 w-8 bg-green-600/20 rounded-full" />
 								) : (
-									(ticketData.data?.data.status.toString() ?? 'UNKNOWN')
+									(ticketResponse.data?.data.status.toString() ?? 'UNKNOWN')
 								)}
 							</div>
 
 							<div className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-600">
-								{ticketData.isLoading ? (
+								{ticketResponse.isLoading ? (
 									<Skeleton className="h-4 w-8 bg-red-600/20 rounded-full" />
 								) : (
-									(ticketData.data?.data.priority.toString() ?? 'UNKNOWN')
+									(ticketResponse.data?.data.priority.toString() ?? 'UNKNOWN')
 								)}
 							</div>
 
@@ -112,8 +129,8 @@ export default function Page() {
 						</div>
 
 						<HeaderText
-							title={`${ticketData.data?.data.title ?? 'Loading...'}`}
-							description={`Created at: ${new Date(ticketData.data?.data.createdAt ?? '').toLocaleString() ?? 'Loading...'}`}
+							title={`${ticketResponse.data?.data.title ?? 'Loading...'}`}
+							description={`Created at: ${new Date(ticketResponse.data?.data.createdAt ?? '').toLocaleString() ?? 'Loading...'}`}
 						/>
 					</div>
 
@@ -131,7 +148,7 @@ export default function Page() {
 										senderEmail={message.senderEmail}
 										message={message.message}
 										createdAt={message.createdAt}
-										ticketAuthor={ticketData.data?.data.createdBy ?? ''}
+										ticketAuthor={ticketResponse.data?.data.createdBy ?? ''}
 									/>
 								))}
 							</div>
