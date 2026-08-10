@@ -4,6 +4,7 @@ import com.quantum.modmail.auth.dto.AuthResponse;
 import com.quantum.modmail.auth.dto.AuthResult;
 import com.quantum.modmail.auth.dto.LoginRequest;
 import com.quantum.modmail.auth.dto.RegisterRequest;
+import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    private ResponseEntity<ApiResponse<AuthResponse>> refresh(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+    private ResponseEntity<ApiResponse<AuthResponse>> refresh(
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "REFRESH_TOKEN_MISSING", "Refresh token is missing");
+        }
+
         AuthResponse response = authService.refresh(refreshToken);
 
         return ResponseEntity.status(HttpStatus.OK)

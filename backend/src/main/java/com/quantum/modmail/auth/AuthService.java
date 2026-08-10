@@ -11,11 +11,13 @@ import com.quantum.modmail.user.entity.User;
 import com.quantum.modmail.user.entity.UserRole;
 import com.quantum.modmail.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -62,7 +64,7 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
         ResponseCookie responseCookie = this.createRefreshCookie(refreshToken);
-
+        log.info("New user logged in: {}", request.email());
         return new AuthResult(new AuthResponse(accessToken), responseCookie);
     }
 
@@ -81,6 +83,7 @@ public class AuthService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "EXPIRED_TOKEN", "Your token has been expired"));
 
         String accessToken = jwtService.generateAccessToken(user.getEmail());
+        log.info("Refresh token for: {}", user.getEmail());
         return new AuthResponse(accessToken);
     }
 }
