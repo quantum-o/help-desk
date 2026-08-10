@@ -11,6 +11,8 @@ export async function register(data: RegisterRequest) {
     const response = await axiosClient.post("/auth/register", {
         email: data.email,
         password: data.password,
+    }, {
+        withCredentials: false,
     });
     return response.data as ApiResponse<LoginResponse>;
 }
