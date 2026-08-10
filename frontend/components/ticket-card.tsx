@@ -32,6 +32,10 @@ const TicketStatusCard = ({ status }: { status: TicketStatus | undefined }) => {
 			statusColor = 'bg-yellow-500';
 			statusText = 'In Progress';
 			break;
+		case TicketStatus.RESOLVED:
+			statusColor = 'bg-blue-500';
+			statusText = 'Resolved';
+			break;
 		default:
 			statusColor = 'bg-gray-500';
 			statusText = 'Unknown';

@@ -1,5 +1,6 @@
 'use client';
 
+import AdminAside from '@/components/admin-aside';
 import HeaderText from '@/components/header-text';
 import TicketMessage from '@/components/ticket-message';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import {
 	InputGroupInput,
 } from '@/components/ui/input-group';
 import { Skeleton } from '@/components/ui/skeleton';
+import useAuthStore from '@/features/auth/auth-store';
 import useGetTicketMessages from '@/features/tickets/hooks/use-get-messages';
 import useGetTicket from '@/features/tickets/hooks/use-get-ticket';
 import useSendMessage from '@/features/tickets/hooks/use-send-message';
@@ -24,18 +26,24 @@ export default function Page() {
 	const params = useParams<{ id: string }>();
 	const ticketResponse = useGetTicket(params.id);
 
-	if(ticketResponse.isError) {
+	if (ticketResponse.isError) {
 		notFound();
 	}
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
-		useGetTicketMessages(params.id);
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		isError,
+	} = useGetTicketMessages(params.id);
 
 	if (isError) {
 		notFound();
 	}
 
-	const isAdmin = false;
+	const isAdmin = useAuthStore((state) => state.isAdmin());
 
 	const messagesRef = useRef<HTMLDivElement>(null);
 	const messages = data?.pages.flatMap((page) => page.data).reverse() ?? [];
@@ -197,9 +205,7 @@ export default function Page() {
 					</div>
 				</div>
 
-				{isAdmin && (
-					<aside className="w-80 border-l bg-muted/20 p-6">Admin Panel</aside>
-				)}
+				{isAdmin && <AdminAside />}
 			</div>
 		</>
 	);
