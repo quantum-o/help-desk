@@ -7,6 +7,7 @@ import com.quantum.modmail.ticket.dto.*;
 import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketMessage;
 import com.quantum.modmail.ticket.entity.TicketStatus;
+import com.quantum.modmail.ticket.mappers.TicketMapper;
 import com.quantum.modmail.ticket.repositories.TicketMessageRepository;
 import com.quantum.modmail.ticket.repositories.TicketRepository;
 import com.quantum.modmail.user.entity.User;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,16 +46,7 @@ public class TicketService {
 
         Ticket createdTicket = ticketRepository.save(ticket);
 
-        return TicketResponse.builder()
-                .id(createdTicket.getId())
-                .title(createdTicket.getTitle())
-                .description(createdTicket.getDescription())
-                .status(createdTicket.getStatus())
-                .priority(createdTicket.getPriority())
-                .createdBy(ticketCreator.getId())
-                .createdAt(ticket.getCreatedAt())
-                .updatedAt(ticket.getUpdatedAt())
-                .build();
+        return TicketMapper.toResponse(createdTicket);
     }
 
     public Optional<List<TicketResponse>> getMyTickets(String email) {
@@ -64,15 +55,7 @@ public class TicketService {
 
         return ticketRepository.findByCreatedBy(user)
                 .map(tickets -> tickets.stream()
-                        .map(ticket -> TicketResponse.builder()
-                                .id(ticket.getId())
-                                .title(ticket.getTitle())
-                                .description(ticket.getDescription())
-                                .status(ticket.getStatus())
-                                .priority(ticket.getPriority())
-                                .createdAt(ticket.getCreatedAt())
-                                .updatedAt(ticket.getUpdatedAt())
-                                .build())
+                        .map(TicketMapper::toResponse)
                         .toList());
     }
 
@@ -93,16 +76,7 @@ public class TicketService {
         if (!isAdmin && !isOwner && !isAssignedAgent)
             throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to access this ticket");
 
-        return TicketResponse.builder()
-                .id(ticket.getId())
-                .title(ticket.getTitle())
-                .description(ticket.getDescription())
-                .status(ticket.getStatus())
-                .priority(ticket.getPriority())
-                .createdBy(ticket.getCreatedBy().getId())
-                .createdAt(ticket.getCreatedAt())
-                .updatedAt(ticket.getUpdatedAt())
-                .build();
+        return TicketMapper.toResponse(ticket);
     }
 
     public void assignTicket(@NotNull UUID ticketId, AssignTicketRequest request, String email) {
@@ -157,15 +131,7 @@ public class TicketService {
         
         Ticket savedTicket = ticketRepository.save(ticket);
 
-        return TicketResponse.builder()
-                .id(savedTicket.getId())
-                .title(savedTicket.getTitle())
-                .description(savedTicket.getDescription())
-                .status(savedTicket.getStatus())
-                .priority(savedTicket.getPriority())
-                .createdAt(ticket.getCreatedAt())
-                .updatedAt(ticket.getUpdatedAt())
-                .build();
+        return TicketMapper.toResponse(savedTicket);
     }
 
     public TicketMessageResponse addMessage(UUID ticketId, SendTicketMessageRequest request, String email) {
