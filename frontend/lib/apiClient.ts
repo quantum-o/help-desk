@@ -27,7 +27,7 @@ axiosClient.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if (error.config.url?.includes("/auth/refresh")) {
+        if (error.config.url?.includes("/auth/refresh") || error.config._skipRetry) {
             useAuthStore.getState().logout();
             return Promise.reject(error);
         }
@@ -45,6 +45,7 @@ axiosClient.interceptors.response.use(
             error.config.headers.Authorization =
                 `Bearer ${refreshResponse.data.accessToken}`;
 
+            error.config._skipRetry = true;
             return axiosClient.request(error.config);
         } catch {
             useAuthStore.getState().logout();
