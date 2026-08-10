@@ -1,53 +1,47 @@
 'use client';
 
-import HeaderText from '@/components/header-text';
-import TicketCard from '@/components/ticket-card';
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from '@/components/ui/input-group';
-import useMyTickets from '@/features/tickets/hooks/use-my-tickets';
-import { IconSearch } from '@tabler/icons-react';
+import MyTickets from '@/components/tickets/MyTickets';
+import { columns } from '@/components/tickets/table/columns';
+import { DataTable } from '@/components/tickets/table/data-table';
+import useAuthStore from '@/features/auth/auth-store';
+import useGetTickets from '@/features/tickets/hooks/use-get-tickets';
+import { useState } from 'react';
 
 const page = () => {
-	const myTickets = useMyTickets();
-
-	if (
-		myTickets.isLoading ||
-		myTickets.isError ||
-		myTickets.data?.data === undefined
-	) {
+	const isAdmin = useAuthStore((state) => state.isAdmin());
+	const [pagination, setPagination] = useState({
+		pageIndex: 0,
+		pageSize: 20,
+	});
+	const { data, isLoading, isError, error } = useGetTickets(pagination);
+	if (isLoading || isError || data?.data === undefined) {
 		return <div>Loading...</div>;
 	}
 
-	return (
-		<div className="px-4">
-			<HeaderText title="Tickets" description="View all your support tickets" />
-
-			<InputGroup className="max-w-xs mt-6">
-				<InputGroupInput placeholder="Search..." />
-				<InputGroupAddon>
-					<IconSearch />
-				</InputGroupAddon>
-			</InputGroup>
-
-			<div className="grid grid-cols-1 gap-4 mt-4">
-				{myTickets.data?.data.length === 0 ? (
-					<div className="text-muted-foreground">No tickets found.</div>
-				) : (
-					myTickets.data?.data.map((ticket) => (
-						<TicketCard
-							key={ticket.id}
-							id={ticket.id}
-							title={ticket.title}
-							description={ticket.description}
-							status={ticket.status}
-						/>
-					))
-				)}
+	if (isError) {
+		return (
+			<div>
+				Error: {error instanceof Error ? error.message : 'Unknown error'}
 			</div>
-		</div>
+		);
+	}
+
+	const pageResponse = data.data;
+
+	if (pageResponse.totalElements === 0) {
+		return <div>No tickets found.</div>;
+	}
+
+	if (!isAdmin) return <MyTickets ticketList={pageResponse.content} />;
+
+	return (
+		<DataTable
+			columns={columns}
+			data={pageResponse.content}
+			pagination={pagination}
+			setPagination={setPagination}
+			totalCount={pageResponse.totalElements}
+		/>
 	);
 };
 

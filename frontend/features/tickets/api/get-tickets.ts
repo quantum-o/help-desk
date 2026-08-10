@@ -3,8 +3,8 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { ITicket } from "../types/ITicket";
 import { PageResponse } from "@/types/PageResponse";
 
-export async function my(page = 0, size = 20) {
-    const response = await axiosClient.get("/tickets/my", {
+export async function getTickets(page = 0, size = 20) {
+    const response = await axiosClient.get("/tickets", {
         params: {
             page,
             size

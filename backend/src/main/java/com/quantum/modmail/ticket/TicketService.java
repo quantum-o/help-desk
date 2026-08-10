@@ -15,6 +15,7 @@ import com.quantum.modmail.user.entity.UserRole;
 import com.quantum.modmail.user.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,16 @@ public class TicketService {
                 .map(tickets -> tickets.stream()
                         .map(TicketMapper::toResponse)
                         .toList());
+    }
+
+    public Page<TicketResponse> getTickets(String email, int page, int size) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TicketResponse> response = ticketRepository.findAll(pageable).map(TicketMapper::toResponse);
+
+        return response;
     }
 
     public TicketResponse getTicket(UUID id, String email) {

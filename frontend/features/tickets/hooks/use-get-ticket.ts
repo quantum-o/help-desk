@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { my } from "../api/my";
 import { getTicket } from "../api/get-ticket";
 
 export default function useGetTicket(id: string) {
