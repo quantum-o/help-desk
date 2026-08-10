@@ -5,6 +5,7 @@ import com.quantum.modmail.common.response.CursorResponse;
 import com.quantum.modmail.ticket.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,18 @@ public class TicketController {
 
         Optional<List<TicketResponse>> responses =  ticketService.getMyTickets(email);
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", responses));
+    }
+
+    @GetMapping()
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTickets(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "20") int size,
+            Authentication authentication
+            ) {
+        String email = authentication.getName();
+
+        Page<TicketResponse> response = ticketService.getTickets(email, page, size);
+        return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", response));
     }
 
     @GetMapping("/{id}")
