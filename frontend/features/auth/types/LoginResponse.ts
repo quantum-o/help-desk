@@ -1,5 +1,3 @@
-import { ApiResponse } from "@/types/ApiResponse";
-
-export type LoginResponse = ApiResponse<{
+export type LoginResponse = {
     accessToken: string;
-}>;
+};

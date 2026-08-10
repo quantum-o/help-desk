@@ -9,7 +9,6 @@ export default function useSendMessage() {
     return useMutation({
         mutationFn: sendMessage,
         onSuccess: (response: ApiResponse<TicketMessagesResponse>, variables: SendMessageType) => {
-            console.log(queryClient.getQueryData(["ticket-messages", variables.ticketId]))
             queryClient.setQueryData(
                 ["ticket-messages", variables.ticketId],
                 (oldData: InfiniteData<TicketMessagesResponse[]>) => {

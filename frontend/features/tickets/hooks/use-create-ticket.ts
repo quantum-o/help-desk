@@ -2,23 +2,17 @@ import { useMutation } from "@tanstack/react-query";
 import { CreateNewTicketResponse } from "../types/CreateNewTicketResponse";
 import { create } from "../api/create";
 import { queryClient } from "@/app/providers";
+import { ApiResponse } from "@/types/ApiResponse";
 
 export default function useCreateTicket() {
     return useMutation({
         mutationFn: create,
-        onSuccess: (data: CreateNewTicketResponse) => {
+        onSuccess: (response: ApiResponse<CreateNewTicketResponse>) => {
             queryClient.setQueryData(["my-tickets"], (oldData: any) => {
-                if (!oldData) {
-                    return {
-                        data: [data],
-                        message: "Successfully fetched my tickets",
-                        status: "success"
-                    }
-                }
-
+                if (!oldData) return { data: [response.data] };
                 return {
                     ...oldData,
-                    data: [...oldData.data, data]
+                    data: [...oldData.data, response.data],
                 };
             });
         }

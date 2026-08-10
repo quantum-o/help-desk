@@ -1,6 +1,5 @@
 import { refresh } from "@/features/auth/api/refresh";
 import useAuthStore from "@/features/auth/auth-store";
-import { ApiResponse } from "@/types/ApiResponse";
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8080";
@@ -34,17 +33,17 @@ axiosClient.interceptors.response.use(
         }
 
         try {
-            const data = await refresh();
+            const refreshResponse = await refresh();
 
-            if (!data.success) {
+            if (!refreshResponse.success) {
                 useAuthStore.getState().logout();
                 return Promise.reject(error);
             }
 
-            useAuthStore.getState().login(data.data.accessToken);
+            useAuthStore.getState().login(refreshResponse.data.accessToken);
 
             error.config.headers.Authorization =
-                `Bearer ${data.data.accessToken}`;
+                `Bearer ${refreshResponse.data.accessToken}`;
 
             return axiosClient.request(error.config);
         } catch {
