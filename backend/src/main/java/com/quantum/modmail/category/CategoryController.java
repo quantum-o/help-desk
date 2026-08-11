@@ -28,8 +28,15 @@ public class CategoryController {
         return ResponseEntity.ok(ApiResponse.ok("Success", categoryService.addNewCategory(request)));
     }
 
-    @PatchMapping
-    public ResponseEntity<ApiResponse<CategoryResponse>> patch(@Valid @RequestBody CategoryPatchRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok("Success", categoryService.updateCategory(request)));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponse>> patch(@Valid @RequestBody CategoryPatchRequest request, @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Success", categoryService.updateCategory(id, request)));
+    }
+
+    @DeleteMapping("/{id}") // soft delete, pasife alma, eğer parent pasifse tüm sublar pasif olacak
+    public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
+        categoryService.deleteCategory(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

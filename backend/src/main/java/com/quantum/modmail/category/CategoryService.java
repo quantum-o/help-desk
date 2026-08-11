@@ -8,6 +8,7 @@ import com.quantum.modmail.category.mapper.CategoryMapper;
 import com.quantum.modmail.category.repository.CategoryRepository;
 import com.quantum.modmail.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<CategoryResponse> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll(Sort.by("createdAt").ascending());
 
         Map<Long, List<Category>> childrenMap = categories.stream()
                 .filter(category -> category.getParent() != null)
@@ -60,8 +61,8 @@ public class CategoryService {
 
     }
 
-    public CategoryResponse updateCategory(CategoryPatchRequest request) {
-        Category currentCategory = categoryRepository.findById(request.id())
+    public CategoryResponse updateCategory(Long id, CategoryPatchRequest request) {
+        Category currentCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "NOT_FOUND", "Category not found by id"));
 
         if (request.parent() == null) {
@@ -86,7 +87,7 @@ public class CategoryService {
         Category newParent = categoryRepository.findById(request.parent())
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "PARENT_NOT_FOUND", "Parent not found"));
 
-        if(isDescendant(newParent, request.id())){
+        if(isDescendant(newParent, id)){
             throw new BusinessException(HttpStatus.BAD_REQUEST, "PARENT_CANT_BE_CHILD", "Parent id cant be child of itself");
         }
 
@@ -123,5 +124,14 @@ public class CategoryService {
         }
 
         return false;
+    }
+
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "CATEGORY_NOT_FOUND", "Category not found by id"));
+
+        if (!category.getChildren().isEmpty()) {
+            categoryRepository.deleteById(category.getId());
+        }
     }
 }
