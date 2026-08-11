@@ -16,3 +16,8 @@ jwt:
   secret: very-very-very-very-very-very-secret-key
   access-token-expiration: 300000
   refresh-token-expiration: 10080000
+logging:
+  level:
+    root: "warn"
+    org.springframework.web: "debug"
+    org.hibernate: "error"
