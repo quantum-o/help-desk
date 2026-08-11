@@ -1,0 +1,154 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { CategoryResponse } from '@/features/categories/types/CategoryResponse';
+import {
+	IconChevronRight,
+	IconCross,
+	IconFolder,
+	IconFolderOpen,
+	IconPlus,
+	IconX,
+} from '@tabler/icons-react';
+import useDeleteCategory from '@/features/categories/hooks/use-delete-category';
+
+function CategoryTreeItem({
+	category,
+	depth = 0,
+	setAddCategoryDialog,
+	selectedParentCategoryId,
+	setSelectedParentCategoryId,
+}: {
+	category: CategoryResponse;
+	depth?: number;
+	setAddCategoryDialog: (open: boolean) => void;
+	selectedParentCategoryId: number | null;
+	setSelectedParentCategoryId: (id: number | null) => void;
+}) {
+	const [open, setOpen] = useState(false);
+	const hasChildren = category.children && category.children.length > 0;
+    const useDeleteCategoryMutation = useDeleteCategory();
+
+	return (
+		<Collapsible open={open} onOpenChange={setOpen}>
+			<div
+				className="group flex items-center rounded-md border border-transparent px-2 py-1.5 transition-colors hover:border-border hover:bg-muted/50"
+				style={{
+					marginLeft: depth * 24,
+				}}
+				onClick={() => hasChildren && setOpen(!open)}
+			>
+				{hasChildren ? (
+					<IconChevronRight
+						className={`size-4 transition-transform ${open ? 'rotate-90' : ''}`}
+					/>
+				) : (
+					<div className="mr-1 size-6" />
+				)}
+
+				<div className="mr-2 text-muted-foreground">
+					{open ? (
+						<IconFolderOpen className="size-4" />
+					) : (
+						<IconFolder className="size-4" />
+					)}
+				</div>
+
+				<span className="flex-1 truncate text-sm font-medium">
+					{category.name}
+				</span>
+
+				<div className="flex items-center gap-1">
+					<div className="flex items-center opacity-0 transition-opacity group-hover:opacity-100 z-10">
+						<Button
+							variant="default"
+							size="icon"
+							className="size-7"
+							onClick={(e) => {
+                                e.stopPropagation();
+								setSelectedParentCategoryId(category.id);
+								setAddCategoryDialog(true);
+							}}
+						>
+							<IconPlus className="size-4" />
+						</Button>
+					</div>
+					<div className="flex items-center opacity-0 transition-opacity group-hover:opacity-100 z-10">
+						<Button
+							variant="destructive"
+							size="icon"
+							className="size-7"
+							onClick={(e) => {
+                                e.stopPropagation();
+                                useDeleteCategoryMutation.mutate({ categoryId: category.id });
+                            }}
+                            disabled={useDeleteCategoryMutation.isPending}
+						>
+							<IconX className="size-4" />
+						</Button>
+					</div>
+				</div>
+			</div>
+
+			{hasChildren && (
+				<CollapsibleContent>
+					<div className="relative">
+						{category.children.map((child) => (
+							<CategoryTreeItem
+								key={child.id}
+								category={child}
+								depth={depth + 1}
+								selectedParentCategoryId={selectedParentCategoryId}
+								setSelectedParentCategoryId={setSelectedParentCategoryId}
+								setAddCategoryDialog={setAddCategoryDialog}
+							/>
+						))}
+					</div>
+				</CollapsibleContent>
+			)}
+		</Collapsible>
+	);
+}
+
+export function CategoryTree({
+	categories,
+	setAddCategoryDialog,
+	selectedParentCategoryId,
+	setSelectedParentCategoryId,
+}: {
+	categories: CategoryResponse[];
+	setAddCategoryDialog: (open: boolean) => void;
+	selectedParentCategoryId: number | null;
+	setSelectedParentCategoryId: (id: number | null) => void;
+}) {
+	return (
+		<div className="rounded-lg border bg-card p-2">
+			<div className="mb-2 flex items-center justify-between border-b px-3 py-2">
+				<div>
+					<h3 className="text-sm font-semibold">Categories</h3>
+					<p className="text-xs text-muted-foreground">
+						Manage your category hierarchy
+					</p>
+				</div>
+
+				<Button size="sm" onClick={() => setAddCategoryDialog(true)}>
+					<IconPlus className="mr-2 size-4" />
+					Add category
+				</Button>
+			</div>
+
+			<div className="space-y-0.5">
+				{categories.map((category) => (
+					<CategoryTreeItem
+						key={category.id}
+						category={category}
+						depth={0}
+						selectedParentCategoryId={selectedParentCategoryId}
+						setSelectedParentCategoryId={setSelectedParentCategoryId}
+						setAddCategoryDialog={setAddCategoryDialog}
+					/>
+				))}
+			</div>
+		</div>
+	);
+}

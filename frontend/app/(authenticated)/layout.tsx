@@ -8,7 +8,7 @@ import {
 import useAuthStore from '@/features/auth/auth-store';
 import useMe from '@/features/auth/hooks/use-me';
 import { SidebarItem } from '@/types/sidebar';
-import { IconDashboard, IconTicket } from '@tabler/icons-react';
+import { IconCategory, IconDashboard, IconTicket } from '@tabler/icons-react';
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -22,6 +22,11 @@ const navList: SidebarItem[] = [
 		name: 'Tickets',
 		url: '/tickets',
 		icon: <IconTicket />,
+	},
+	{
+		name: 'Categories',
+		url: '/categories',
+		icon: <IconCategory />,
 	},
 ];
 
