@@ -29,10 +29,13 @@ public class TicketController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponse<Optional<List<TicketResponse>>>> my(Authentication authentication) {
+    public ResponseEntity<ApiResponse<Page<TicketResponse>>> my(
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "20") int size,
+        Authentication authentication) {
         String email = authentication.getName();
 
-        Optional<List<TicketResponse>> responses =  ticketService.getMyTickets(email);
+        Page<TicketResponse> responses =  ticketService.getMyTickets(email, page, size);
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", responses));
     }
 

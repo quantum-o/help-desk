@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -50,14 +49,12 @@ public class TicketService {
         return TicketMapper.toResponse(createdTicket);
     }
 
-    public Optional<List<TicketResponse>> getMyTickets(String email) {
+    public Page<TicketResponse> getMyTickets(String email, int page, int size) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "User not found"));
 
-        return ticketRepository.findByCreatedBy(user)
-                .map(tickets -> tickets.stream()
-                        .map(TicketMapper::toResponse)
-                        .toList());
+        Pageable pageable = PageRequest.of(page, size);
+        return ticketRepository.findByCreatedBy(user, pageable).map(TicketMapper::toResponse);
     }
 
     public Page<TicketResponse> getTickets(String email, int page, int size) {
@@ -79,13 +76,13 @@ public class TicketService {
 
         boolean isAdmin = user.getRole() == UserRole.ADMIN;
         boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent =
-                user.getRole() == UserRole.AGENT &&
-                        ticket.getAssignedTo() != null &&
-                        ticket.getAssignedTo().getId().equals(user.getId());
+        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
+                ticket.getAssignedTo() != null &&
+                ticket.getAssignedTo().getId().equals(user.getId());
 
         if (!isAdmin && !isOwner && !isAssignedAgent)
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to access this ticket");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+                    "You do not have permission to access this ticket");
 
         return TicketMapper.toResponse(ticket);
     }
@@ -95,16 +92,18 @@ public class TicketService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
 
         if (user.getRole() != UserRole.ADMIN) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to assign tickets");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+                    "You do not have permission to assign tickets");
         }
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
 
         User targetUser = userRepository.findById(request.id())
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "Target user not found"));
+                .orElseThrow(
+                        () -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "Target user not found"));
 
-        if(targetUser.getRole() != UserRole.AGENT) {
+        if (targetUser.getRole() != UserRole.AGENT) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_USER_ROLE", "Target user must be an agent");
         }
 
@@ -124,7 +123,8 @@ public class TicketService {
                 && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
 
         if (!isAdmin && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to update tickets");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+                    "You do not have permission to update tickets");
         }
 
         if (request.title() != null) {
@@ -139,7 +139,7 @@ public class TicketService {
         if (request.status() != null) {
             ticket.setStatus(request.status());
         }
-        
+
         Ticket savedTicket = ticketRepository.save(ticket);
 
         return TicketMapper.toResponse(savedTicket);
@@ -154,12 +154,12 @@ public class TicketService {
 
         boolean isAdmin = user.getRole() == UserRole.ADMIN;
         boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent =
-                user.getRole() == UserRole.AGENT &&
+        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
                 ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
 
         if (!isAdmin && !isOwner && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to send messages to this ticket");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+                    "You do not have permission to send messages to this ticket");
         }
 
         TicketMessage ticketMessage = TicketMessage.builder()
@@ -188,12 +188,12 @@ public class TicketService {
 
         boolean isAdmin = user.getRole() == UserRole.ADMIN;
         boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent =
-                user.getRole() == UserRole.AGENT &&
-                        ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
+        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
+                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
 
         if (!isAdmin && !isOwner && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to send messages to this ticket");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+                    "You do not have permission to send messages to this ticket");
         }
 
         List<TicketMessage> messages;
@@ -201,8 +201,7 @@ public class TicketService {
         Pageable pageable = PageRequest.of(0, size + 1);
         if (cursor == null || cursor.isBlank()) {
             messages = ticketMessageRepository.findByTicketOrderByCreatedAtDesc(ticket, pageable).getContent();
-        }
-        else {
+        } else {
             CursorUtil.DecodedCursor decodedCursor;
             try {
                 decodedCursor = CursorUtil.decodeCursor(cursor);
@@ -210,13 +209,14 @@ public class TicketService {
                 throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_CURSOR", "Cursor must be a valid string");
             }
 
-            messages = ticketMessageRepository.findByTicketAndOrderByCreatedAtDescWithCursor(ticket, decodedCursor.createdAt(), decodedCursor.id(), pageable);
+            messages = ticketMessageRepository.findByTicketAndOrderByCreatedAtDescWithCursor(ticket,
+                    decodedCursor.createdAt(), decodedCursor.id(), pageable);
         }
 
         String nextCursor = null;
         boolean hasMore = messages.size() > size;
 
-        if(hasMore) {
+        if (hasMore) {
             messages = messages.subList(0, size);
 
             TicketMessage lastMessage = messages.getLast();
