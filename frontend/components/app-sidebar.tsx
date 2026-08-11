@@ -16,9 +16,10 @@ import Link from 'next/link';
 
 export interface AppSidebarProps {
 	items: SidebarItem[];
+	className?: string;
 }
 
-export default function AppSidebar({ items }: AppSidebarProps) {
+export default function AppSidebar({ items, className }: AppSidebarProps) {
 	const handleLogout = async () => {
 		try {
 			await logout();
@@ -29,13 +30,7 @@ export default function AppSidebar({ items }: AppSidebarProps) {
 	};
 
 	return (
-		<Sidebar>
-			<SidebarHeader>
-				<div className="">
-					<h4>Support Desk</h4>
-					<p>Enterprise Support</p>
-				</div>
-			</SidebarHeader>
+		<Sidebar className={className}>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarMenu>
