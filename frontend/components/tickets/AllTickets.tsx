@@ -14,17 +14,16 @@ type Props = {
 	totalCount: number;
 };
 
-const MyTickets = ({ data, pagination, setPagination, totalCount }: Props) => {
+const AllTickets = ({ data, pagination, setPagination, totalCount }: Props) => {
 	const isAdmin = useAuthStore((state) => state.isAdmin());
-
 	return (
 		<div className="flex flex-col px-4 py-2 gap-4">
 			<HeaderText
-				title="My Tickets"
+				title="Admin Tickets"
 				description="View all your support tickets"
 			/>
 
-			<div className="h-180">
+			<div className='h-180'>
 				<DataTable
 					columns={getColumns(isAdmin)}
 					data={data}
@@ -37,4 +36,4 @@ const MyTickets = ({ data, pagination, setPagination, totalCount }: Props) => {
 	);
 };
 
-export default MyTickets;
+export default AllTickets;

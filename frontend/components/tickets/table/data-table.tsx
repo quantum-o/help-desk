@@ -6,6 +6,7 @@ import {
 	Table,
 	TableBody,
 	TableCell,
+	TableFooter,
 	TableHead,
 	TableHeader,
 	TableRow,
@@ -13,6 +14,7 @@ import {
 
 import { features, type DataTableFeatures } from './data-table-features';
 import { DataTablePagination } from './data-table-pagination';
+import { Separator } from '@/components/ui/separator';
 
 interface DataTableProps<TData extends RowData> {
 	columns: ColumnDef<DataTableFeatures, TData>[];
@@ -45,47 +47,62 @@ export function DataTable<TData extends RowData>({
 	});
 
 	return (
-		<div className="overflow-hidden rounded-md border">
-			<Table>
-				<TableHeader>
-					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder ? null : (
-											<table.FlexRender header={header} />
-										)}
-									</TableHead>
-								);
-							})}
-						</TableRow>
-					))}
-				</TableHeader>
-				<TableBody>
-					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && 'selected'}
-							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										<table.FlexRender cell={cell} />
-									</TableCell>
-								))}
+		<div className="h-full flex flex-col overflow-hidden rounded-md border">
+			<div className="min-h-0 flex-1 overflow-auto">
+				<Table>
+					<TableHeader className="bg-muted sticky top-0 z-10">
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder ? null : (
+												<table.FlexRender header={header} />
+											)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						))
-					) : (
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows?.length > 0 ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && 'selected'}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											<table.FlexRender cell={cell} />
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									No results.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+			<div className="shrink-0">
+				<Table>
+					<TableFooter>
 						<TableRow>
-							<TableCell colSpan={columns.length} className="h-24 text-center">
-								No results.
+							<TableCell colSpan={columns.length}>
+								<DataTablePagination table={table} />
 							</TableCell>
 						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-			<DataTablePagination table={table} />
+					</TableFooter>
+				</Table>
+			</div>
 		</div>
 	);
 }
