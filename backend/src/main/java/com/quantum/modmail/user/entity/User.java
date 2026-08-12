@@ -35,4 +35,7 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private boolean active;
+
+    @Column(nullable = false, name = "isDeleted")
+    private boolean deleted;
 }
