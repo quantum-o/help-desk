@@ -7,6 +7,7 @@ import com.quantum.modmail.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class CategoryController {
         return ResponseEntity.ok(ApiResponse.ok("Success", categoryService.updateCategory(id, request)));
     }
 
-    @DeleteMapping("/{id}") // soft delete, pasife alma, eğer parent pasifse tüm sublar pasif olacak
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
         categoryService.deleteCategory(id);
 

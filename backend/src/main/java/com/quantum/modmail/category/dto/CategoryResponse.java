@@ -8,6 +8,7 @@ import java.util.List;
 public record CategoryResponse(
         Long id,
         String name,
+        boolean passive,
         List<CategoryResponse> children
 ) {
 }

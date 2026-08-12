@@ -8,6 +8,7 @@ public class CategoryMapper {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
+                .passive(category.isPassive())
                 .children(category.getChildren()
                         .stream()
                         .map(CategoryMapper::toResponse)

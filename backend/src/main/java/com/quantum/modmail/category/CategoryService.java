@@ -22,7 +22,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<CategoryResponse> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll(Sort.by("createdAt").ascending());
+        List<Category> categories = categoryRepository.findByDeletedFalse(Sort.by("createdAt").ascending());
 
         Map<Long, List<Category>> childrenMap = categories.stream()
                 .filter(category -> category.getParent() != null)
@@ -37,7 +37,7 @@ public class CategoryService {
     }
 
     public CategoryResponse addNewCategory(CategoryCreateRequest request) {
-        if(request.parent() == null) {
+        if (request.parent() == null) {
             Category category = Category.builder()
                     .name(request.name())
                     .build();
@@ -66,7 +66,7 @@ public class CategoryService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "NOT_FOUND", "Category not found by id"));
 
         if (request.parent() == null) {
-            if(request.name() != null) {
+            if (request.name() != null) {
                 currentCategory.setName(request.name());
             }
 
@@ -75,11 +75,11 @@ public class CategoryService {
             return CategoryMapper.toResponse(newCategory);
         }
 
-        if(request.name() != null) {
+        if (request.name() != null) {
             currentCategory.setName(request.name());
         }
 
-        if(currentCategory.getId().equals(request.parent())) {
+        if (currentCategory.getId().equals(request.parent())) {
             Category newCategory = categoryRepository.save(currentCategory);
             return CategoryMapper.toResponse(newCategory);
         }
@@ -87,7 +87,7 @@ public class CategoryService {
         Category newParent = categoryRepository.findById(request.parent())
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "PARENT_NOT_FOUND", "Parent not found"));
 
-        if(isDescendant(newParent, id)){
+        if (isDescendant(newParent, id)) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "PARENT_CANT_BE_CHILD", "Parent id cant be child of itself");
         }
 
@@ -103,12 +103,17 @@ public class CategoryService {
         List<CategoryResponse> children = childrenMap
                 .getOrDefault(category.getId(), List.of())
                 .stream()
-                .map(child -> buildTree(child, childrenMap))
+                .map(child -> {
+                    if (category.isPassive())
+                        child.setPassive(true);
+                    return buildTree(child, childrenMap);
+                })
                 .toList();
 
         return new CategoryResponse(
                 category.getId(),
                 category.getName(),
+                category.isPassive(),
                 children
         );
     }
@@ -116,8 +121,8 @@ public class CategoryService {
     private boolean isDescendant(Category category, Long targetId) {
         Category current = category;
 
-        while(current.getParent() != null) {
-            if(current.getId().equals(targetId))
+        while (current.getParent() != null) {
+            if (current.getId().equals(targetId))
                 return true;
 
             current = current.getParent();
@@ -130,8 +135,11 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "CATEGORY_NOT_FOUND", "Category not found by id"));
 
-        if (!category.getChildren().isEmpty()) {
-            categoryRepository.deleteById(category.getId());
-        }
+        if (category.getChildren().isEmpty())
+            category.setDeleted(true);
+        else
+            category.setPassive(true);
+
+        categoryRepository.save(category);
     }
 }

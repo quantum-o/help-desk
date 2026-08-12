@@ -3,6 +3,7 @@ package com.quantum.modmail.category.entity;
 import com.quantum.modmail.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,14 @@ public class Category extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(name = "isPassive")
+    @ColumnDefault("false")
+    private boolean passive;
+
+    @Column(name = "isDeleted")
+    @ColumnDefault("false")
+    private boolean deleted;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
