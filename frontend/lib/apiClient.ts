@@ -12,6 +12,11 @@ const axiosClient = axios.create({
     withCredentials: true,
 });
 
+const refreshClient = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true,
+});
+
 axiosClient.interceptors.request.use((config) => {
     const accessToken = useAuthStore.getState().accessToken;
     if (accessToken) {
@@ -33,7 +38,7 @@ axiosClient.interceptors.response.use(
         }
 
         try {
-            const refreshResponse = await refresh();
+            const refreshResponse = await refresh(refreshClient);
 
             if (!refreshResponse.success) {
                 useAuthStore.getState().logout();
