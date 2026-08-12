@@ -3,7 +3,6 @@ import { getTicketMessages } from "../api/get-ticket-messages";
 
 export default function useGetTicketMessages(
     id: string,
-    size = 20,
 ) {
     return useInfiniteQuery({
         queryKey: ["ticket-messages", id],

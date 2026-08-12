@@ -3,7 +3,6 @@ import {
 	SidebarContent,
 	SidebarFooter,
 	SidebarGroup,
-	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
@@ -19,7 +18,7 @@ export interface AppSidebarProps {
 	className?: string;
 }
 
-export default function AppSidebar({ items, className }: AppSidebarProps) {
+export default function AppSidebar({ items, className }: AppSidebarProps): React.ReactNode {
 	const handleLogout = async () => {
 		try {
 			await logout();

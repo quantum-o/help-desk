@@ -19,7 +19,7 @@ import { IconChevronLeft, IconSend } from '@tabler/icons-react';
 import { useForm } from '@tanstack/react-form';
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import z from 'zod';
 
 export default function Page() {
@@ -35,7 +35,6 @@ export default function Page() {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
-		isLoading,
 		isError,
 	} = useGetTicketMessages(params.id);
 
@@ -46,7 +45,7 @@ export default function Page() {
 	const isAdmin = useAuthStore((state) => state.isAdmin());
 
 	const messagesRef = useRef<HTMLDivElement>(null);
-	const messages = data?.pages.flatMap((page) => page.data).reverse() ?? [];
+	const messages = useMemo(() => data?.pages.flatMap((page) => page.data).reverse() ?? [], [data]);
 	const previousHeightRef = useRef(0);
 
 	useEffect(() => {

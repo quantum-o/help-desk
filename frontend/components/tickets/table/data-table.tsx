@@ -14,7 +14,6 @@ import {
 
 import { features, type DataTableFeatures } from './data-table-features';
 import { DataTablePagination } from './data-table-pagination';
-import { Separator } from '@/components/ui/separator';
 
 interface DataTableProps<TData extends RowData> {
 	columns: ColumnDef<DataTableFeatures, TData>[];

@@ -17,7 +17,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import z from 'zod';
 
-const page = () => {
+const page = (): React.ReactNode => {
 	const { data, isLoading, isError } = useGetCategories();
     const addCategoryMutation = useAddCategory();
 	const [addCategoryDialog, setAddCategoryDialog] = useState(false);

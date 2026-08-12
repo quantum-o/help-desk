@@ -30,7 +30,7 @@ const navList: SidebarItem[] = [
 	},
 ];
 
-const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
+const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React.ReactNode => {
 	const { data, isLoading, isError } = useMe();
 
 	useEffect(() => {

@@ -5,7 +5,6 @@ import { CategoryResponse } from '@/features/categories/types/CategoryResponse';
 import {
 	IconCheck,
 	IconChevronRight,
-	IconCross,
 	IconFolder,
 	IconFolderOpen,
 	IconPlus,

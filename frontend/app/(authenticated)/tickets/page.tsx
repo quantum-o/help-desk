@@ -6,7 +6,7 @@ import useAuthStore from '@/features/auth/auth-store';
 import useGetTickets from '@/features/tickets/hooks/use-get-tickets';
 import { useState } from 'react';
 
-const page = () => {
+const page = (): React.ReactNode => {
 	const isAdmin = useAuthStore((state) => state.isAdmin());
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
