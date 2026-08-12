@@ -34,7 +34,6 @@ public class AuthService {
 
         String hashedPassword = passwordEncoder.encode(request.password());
 
-
         User user = User.builder().email(email)
                 .username(email.split("@")[0])
                 .passwordHash(hashedPassword)

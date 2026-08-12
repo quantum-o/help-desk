@@ -30,12 +30,12 @@ public class TicketController {
 
     @GetMapping("/my")
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> my(
-        @RequestParam(required = false, defaultValue = "0") int page,
-        @RequestParam(required = false, defaultValue = "20") int size,
-        Authentication authentication) {
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "20") int size,
+            Authentication authentication) {
         String email = authentication.getName();
 
-        Page<TicketResponse> responses =  ticketService.getMyTickets(email, page, size);
+        Page<TicketResponse> responses = ticketService.getMyTickets(email, page, size);
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", responses));
     }
 
@@ -44,7 +44,7 @@ public class TicketController {
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size,
             Authentication authentication
-            ) {
+    ) {
         String email = authentication.getName();
 
         Page<TicketResponse> response = ticketService.getTickets(email, page, size);
@@ -97,10 +97,10 @@ public class TicketController {
 
     @GetMapping("/{id}/messages")
     public ResponseEntity<ApiResponse<CursorResponse<TicketMessageResponse>>> getMessages(
-        @PathVariable UUID id,
-        @RequestParam(required = false) String cursor,
-        @RequestParam(required = false, defaultValue = "20") int size,
-        Authentication authentication
+            @PathVariable UUID id,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false, defaultValue = "20") int size,
+            Authentication authentication
     ) {
         String email = authentication.getName();
 
