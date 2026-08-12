@@ -65,24 +65,23 @@ public class CategoryService {
         Category currentCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "NOT_FOUND", "Category not found by id"));
 
-        if (request.parent() == null) {
-            if (request.name() != null) {
+        if (request.parent() == null || currentCategory.getId().equals(request.parent())) {
+            if (request.name() != null)
                 currentCategory.setName(request.name());
-            }
+
+            if (request.passive() != null)
+                currentCategory.setPassive(request.passive());
 
             Category newCategory = categoryRepository.save(currentCategory);
 
             return CategoryMapper.toResponse(newCategory);
         }
 
-        if (request.name() != null) {
+        if (request.name() != null)
             currentCategory.setName(request.name());
-        }
 
-        if (currentCategory.getId().equals(request.parent())) {
-            Category newCategory = categoryRepository.save(currentCategory);
-            return CategoryMapper.toResponse(newCategory);
-        }
+        if (request.passive() != null)
+            currentCategory.setPassive(request.passive());
 
         Category newParent = categoryRepository.findById(request.parent())
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "PARENT_NOT_FOUND", "Parent not found"));
