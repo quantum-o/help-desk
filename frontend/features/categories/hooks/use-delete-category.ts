@@ -7,15 +7,18 @@ export default function useDeleteCategory() {
     return useMutation({
         mutationFn: deleteCategory,
         onSuccess: (response: void, variables: { categoryId: number }) => {
-            queryClient.setQueryData(["categories"], (oldData: any) => {
-                if (!oldData) {
-                    return response;
-                }
+            // queryClient.setQueryData(["categories"], (oldData: any) => {
+            //     if (!oldData) {
+            //         return response;
+            //     }
 
-                return {
-                    ...oldData,
-                    data: oldData.data.filter((category: CategoryResponse) => category.id !== variables.categoryId),
-                };
+            //     return {
+            //         ...oldData,
+            //         data: oldData.data.filter((category: CategoryResponse) => category.id !== variables.categoryId),
+            //     };
+            // });
+            queryClient.invalidateQueries({
+                queryKey: ["categories"],
             });
         }
     })

@@ -8,7 +8,6 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -33,6 +32,9 @@ const page = () => {
             }),
 		},
 		onSubmit: async (values) => {
+			setAddCategoryDialog(false);
+			values.formApi.reset();
+			setSelectedParentCategoryId(null);
 			addCategoryMutation.mutate({
                 name: values.value.name,
                 parent: selectedParentCategoryId,
@@ -100,7 +102,6 @@ const page = () => {
 
                             <Button
                                 type="submit"
-                                onClick={form.handleSubmit}
                                 disabled={addCategoryMutation.isPending}
                             >
                                 {addCategoryMutation.isPending ? 'Creating...' : 'Create Category'}

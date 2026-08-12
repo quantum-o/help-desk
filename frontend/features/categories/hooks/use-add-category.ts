@@ -8,16 +8,19 @@ export default function useAddCategory() {
     return useMutation({
         mutationFn: addCategory,
         onSuccess: (response: ApiResponse<CategoryResponse>) => {
-            queryClient.setQueryData(["categories"], (oldData: any) => {
-                if (!oldData) {
-                    return response;
-                }
-
-                return {
-                    ...oldData,
-                    data: [...oldData.data, response.data],
-                };
+            queryClient.invalidateQueries({
+                queryKey: ["categories"],
             });
+            // queryClient.setQueryData(["categories"], (oldData: any) => {
+            //     if (!oldData) {
+            //         return response;
+            //     }
+
+            //     return {
+            //         ...oldData,
+            //         data: [...oldData.data, response.data],
+            //     };
+            // });
         }
     })
 }
