@@ -2,7 +2,7 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 
-import { type DataTableFeatures } from './data-table-features';
+import { type DataTableFeatures } from '../../data-table';
 import { ITicket } from '@/features/tickets/types/ITicket';
 import { Checkbox } from '@/components/ui/checkbox';
 

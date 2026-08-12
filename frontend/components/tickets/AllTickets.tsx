@@ -1,6 +1,6 @@
 import HeaderText from '../header-text';
 import { ITicket } from '@/features/tickets/types/ITicket';
-import { DataTable } from './table/data-table';
+import { DataTable } from '../data-table';
 import getColumns from './table/columns';
 import useAuthStore from '@/features/auth/auth-store';
 
