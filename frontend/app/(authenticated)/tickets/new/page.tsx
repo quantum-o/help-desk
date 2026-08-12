@@ -1,6 +1,7 @@
 'use client';
 
 import HeaderText from '@/components/header-text';
+import { CategoryDropdown } from '@/components/tickets/categories-dropdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -12,30 +13,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import useGetCategories from '@/features/categories/hooks/use-get-categories';
 import useCreateTicket from '@/features/tickets/hooks/use-create-ticket';
 import CreateNewTicket from '@/features/tickets/types/CreateNewTicket';
-import { TicketCategory, TicketPriority } from '@/features/tickets/types/enums';
+import { TicketPriority } from '@/features/tickets/types/enums';
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
-
-const Categories = Object.values(TicketCategory).filter(
-	(val) => isNaN(Number(val)),
-) as TicketCategory[];
-
-const categoryLabels: Record<TicketCategory, string> = {
-	[TicketCategory.TECHNICAL]: 'Technical',
-	[TicketCategory.BILLING]: 'Billing',
-	[TicketCategory.GENERAL]: 'General',
-	[TicketCategory.OTHER]: 'Other',
-};
 
 const NewTicket = () => {
 	const createTicket = useCreateTicket();
@@ -44,7 +28,7 @@ const NewTicket = () => {
 	const form = useForm({
 		defaultValues: {
 			title: '',
-			category: TicketCategory.GENERAL,
+			category: -1,
 			priority: TicketPriority.MEDIUM,
 			description: '',
 		},
@@ -62,6 +46,10 @@ const NewTicket = () => {
 			});
 		},
 	});
+
+	const { data: categoryData, isLoading: categoriesLoading } =
+		useGetCategories();
+
 	return (
 		<div className="flex flex-col w-full px-12 py-6 gap-4">
 			<HeaderText
@@ -112,35 +100,14 @@ const NewTicket = () => {
 												<Field data-invalid={isInvalid}>
 													<FieldLabel htmlFor={field.name}>Category</FieldLabel>
 													<FieldError errors={field.state.meta.errors} />
-													<Select
-														value={
-															TicketCategory[
-																field.state.value as TicketCategory
-															]
+													<CategoryDropdown
+														categories={categoryData?.data ?? []}
+														value={field.state.value as number | null}
+														onChange={(value) =>
+															field.handleChange(value as number)
 														}
-														onValueChange={(value) =>
-															field.handleChange(
-																value as TicketCategory,
-															)
-														}
-													>
-														<SelectTrigger id={field.name} name={field.name}>
-															{categoryLabels[field.state.value as TicketCategory] ||
-																'Select a category'}
-														</SelectTrigger>
-														<SelectContent alignItemWithTrigger={false}>
-															<SelectGroup>
-																{Categories.map((category) => (
-																	<SelectItem
-																		key={category}
-																		value={category.toString()}
-																	>
-																		{categoryLabels[category]}
-																	</SelectItem>
-																))}
-															</SelectGroup>
-														</SelectContent>
-													</Select>
+														loading={categoriesLoading}
+													/>
 												</Field>
 											);
 										}}
@@ -163,9 +130,7 @@ const NewTicket = () => {
 														className="flex flex-row gap-2 items-center"
 														value={field.state.value.toString()}
 														onValueChange={(value) =>
-															field.handleChange(
-																value as TicketPriority,
-															)
+															field.handleChange(value as TicketPriority)
 														}
 													>
 														<div>

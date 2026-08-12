@@ -13,6 +13,7 @@ import {
 import useDeleteCategory from '@/features/categories/hooks/use-delete-category';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { cn } from '@/lib/utils';
+import useUpdateCategory from '@/features/categories/hooks/use-update-category';
 
 function CategoryTreeItem({
 	category,
@@ -28,10 +29,10 @@ function CategoryTreeItem({
 	setSelectedParentCategoryId: (id: number | null) => void;
 }) {
 	const [open, setOpen] = useState(false);
-	const hasChildren = category.children && category.children.length > 0;
+	const hasChildren = category.children && category.children.filter(c => !c.passive).length > 0;
 	const useDeleteCategoryMutation = useDeleteCategory();
+	const useUpdateCategoryMutation = useUpdateCategory();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const hasChild = category.children && category.children.length > 0;
 
 	return (
 		<Collapsible open={open} onOpenChange={setOpen} key={category.id}>
@@ -44,10 +45,10 @@ function CategoryTreeItem({
 			>
 				{hasChildren ? (
 					<IconChevronRight
-						className={`size-4 transition-transform ${open ? 'rotate-90' : ''}`}
+						className={`mr-1 size-4 transition-transform ${open ? 'rotate-90' : ''}`}
 					/>
 				) : (
-					<div className="mr-1 size-6" />
+					<div className="size-4 mr-1" />
 				)}
 
 				<div className="mr-2 text-muted-foreground">
@@ -82,7 +83,7 @@ function CategoryTreeItem({
 							<IconPlus className="size-4" />
 						</Button>
 					</div>
-					{hasChild && category.passive ? (
+					{category.passive ? (
 						<div className="flex items-center opacity-0 transition-opacity group-hover:opacity-100 z-10">
 							<Button
 								variant="success"
@@ -90,8 +91,10 @@ function CategoryTreeItem({
 								className="size-7"
 								onClick={(e) => {
 									e.stopPropagation();
-									setSelectedParentCategoryId(category.id);
-									setAddCategoryDialog(true);
+									useUpdateCategoryMutation.mutate({
+										categoryId: category.id,
+										passive: false,
+									});
 								}}
 							>
 								<IconCheck className="size-4" />
@@ -137,11 +140,11 @@ function CategoryTreeItem({
 				onOpenChange={setDeleteDialogOpen}
 				title={`Delete "${category.name}"?`}
 				description={
-					hasChild
+					hasChildren
 						? `This category has some items inside it will be marked as passive instead of deleted.`
 						: 'This category will be deleted. This action cannot be undone.'
 				}
-				confirmText={hasChild ? 'Mark as Passive' : 'Delete'}
+				confirmText={hasChildren ? 'Mark as Passive' : 'Delete'}
 				onConfirm={async () => {
 					await useDeleteCategoryMutation.mutateAsync({
 						categoryId: category.id,
