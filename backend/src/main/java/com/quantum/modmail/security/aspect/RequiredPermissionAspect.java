@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Component
 public class RequiredPermissionAspect {
     @Around("@annotation(requiredPermission)")
-    public Object around(ProceedingJoinPoint joinPoint, RequiredPermission requiredPermission) throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint, RequiredPermission requiredPermission, boolean requireAll) throws Throwable {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null) {
@@ -30,13 +30,25 @@ public class RequiredPermissionAspect {
             return joinPoint.proceed();
         }
 
-        boolean hasPermission = Arrays.stream(requiredPermission.code())
-                .map(Enum::name)
-                .anyMatch(permission ->
-                        auth.getAuthorities()
-                                .stream()
-                                .anyMatch(a -> a.getAuthority().equals(permission))
-                );
+        boolean hasPermission;
+
+        if (requireAll) {
+            hasPermission = Arrays.stream(requiredPermission.code())
+                    .map(Enum::name)
+                    .allMatch(permission ->
+                            auth.getAuthorities()
+                                    .stream()
+                                    .anyMatch(a -> a.getAuthority().equals(permission))
+                    );
+        } else {
+            hasPermission = Arrays.stream(requiredPermission.code())
+                    .map(Enum::name)
+                    .anyMatch(permission ->
+                            auth.getAuthorities()
+                                    .stream()
+                                    .anyMatch(a -> a.getAuthority().equals(permission))
+                    );
+        }
 
         if (!hasPermission) {
             throw new AccessDeniedException("Insufficient permission");

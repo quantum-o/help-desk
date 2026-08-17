@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RequiredPermission {
     PermissionCode[] code();
+
+    boolean requireAll() default false;
 }
