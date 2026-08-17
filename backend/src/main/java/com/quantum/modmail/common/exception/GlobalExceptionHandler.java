@@ -1,6 +1,7 @@
 package com.quantum.modmail.common.exception;
 
 import com.quantum.modmail.common.response.ApiErrorResponse;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,5 +39,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleBusinessException(MethodArgumentTypeMismatchException ex) {
         ApiErrorResponse response = ApiErrorResponse.of(ex.getMessage(), ex.getErrorCode(), null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiErrorResponse> handleJwtException(JwtException ex) {
+        ApiErrorResponse response = ApiErrorResponse.of("Token is invalid or malformed", "INVALID_TOKEN", null);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

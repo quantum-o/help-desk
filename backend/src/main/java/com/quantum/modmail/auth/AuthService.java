@@ -77,12 +77,18 @@ public class AuthService {
     }
 
     public AuthResponse refresh(String refreshToken) {
-        String email = jwtService.extractEmail(refreshToken);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "EXPIRED_TOKEN", "Your token has been expired"));
+        try {
+            String email = jwtService.extractEmail(refreshToken);
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "EXPIRED_TOKEN", "Your token has been expired"));
 
-        String accessToken = jwtService.generateAccessToken(user.getEmail());
-        log.info("Refresh token for: {}", user.getEmail());
-        return new AuthResponse(accessToken);
+            String accessToken = jwtService.generateAccessToken(user.getEmail());
+            log.info("Refresh token for: {}", user.getEmail());
+            return new AuthResponse(accessToken);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN", "Token is invalid or malformed");
+        }
     }
 }
