@@ -5,13 +5,14 @@ import com.quantum.modmail.common.response.ApiResponse;
 import com.quantum.modmail.user.dto.CreateUserRequest;
 import com.quantum.modmail.user.dto.UpdateUserRequest;
 import com.quantum.modmail.user.dto.UserResponse;
+import com.quantum.modmail.authorization.permission.entity.PermissionCode;
+import com.quantum.modmail.security.RequiredPermission;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @RequiredPermission(code = {PermissionCode.USER_READ})
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getUsers(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size,
@@ -45,6 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @RequiredPermission(code = {PermissionCode.USER_READ})
     public ResponseEntity<ApiResponse<UserResponse>> getUser(
             Authentication authentication,
             @PathVariable UUID id
@@ -55,6 +57,7 @@ public class UserController {
     }
 
     @PostMapping
+    @RequiredPermission(code = {PermissionCode.USER_CREATE})
     public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request) {
         UserResponse userResponse = userService.createUser(request);
 
@@ -62,6 +65,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
+    @RequiredPermission(code = {PermissionCode.USER_UPDATE})
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserRequest request,
@@ -73,6 +77,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @RequiredPermission(code = {PermissionCode.USER_DELETE})
     public ResponseEntity<Null> updateUser(
             @PathVariable UUID id,
             Authentication authentication

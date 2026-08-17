@@ -11,7 +11,6 @@ import com.quantum.modmail.ticket.mappers.TicketMapper;
 import com.quantum.modmail.ticket.repositories.TicketMessageRepository;
 import com.quantum.modmail.ticket.repositories.TicketRepository;
 import com.quantum.modmail.user.entity.User;
-import com.quantum.modmail.user.entity.UserRole;
 import com.quantum.modmail.user.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
