@@ -1,9 +1,9 @@
 package com.quantum.modmail.user.dto;
 
-import com.quantum.modmail.user.entity.UserRole;
 import lombok.Builder;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -11,7 +11,7 @@ public record UserResponse(
         UUID id,
         String username,
         String email,
-        UserRole role,
+        List<UUID> role,
         boolean active,
         Instant createdAt,
         Instant updatedAt

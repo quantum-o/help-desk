@@ -1,5 +1,6 @@
 package com.quantum.modmail.user.mapper;
 
+import com.quantum.modmail.authorization.role.entity.Role;
 import com.quantum.modmail.user.dto.UserResponse;
 import com.quantum.modmail.user.entity.User;
 
@@ -9,7 +10,7 @@ public class UserMapper {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRoles().stream().map(Role::getId).toList())
                 .active(user.isActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())

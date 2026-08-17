@@ -4,11 +4,12 @@ import com.quantum.modmail.auth.dto.AuthResponse;
 import com.quantum.modmail.auth.dto.AuthResult;
 import com.quantum.modmail.auth.dto.LoginRequest;
 import com.quantum.modmail.auth.dto.RegisterRequest;
+import com.quantum.modmail.authorization.role.RoleService;
+import com.quantum.modmail.authorization.role.entity.Role;
 import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.security.jwt.JwtProperties;
 import com.quantum.modmail.security.jwt.JwtService;
 import com.quantum.modmail.user.entity.User;
-import com.quantum.modmail.user.entity.UserRole;
 import com.quantum.modmail.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,8 +29,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final RoleService roleService;
 
     public AuthResult register(RegisterRequest request) {
+        Role defaultRole = roleService.getDefaultRole();
+
         String email = request.email();
         if (userRepository.existsByEmail(email)) {
             throw new BusinessException(HttpStatus.CONFLICT, "USER_EMAIL_ALREADY_EXISTS", "Email is already in use");
@@ -37,7 +44,7 @@ public class AuthService {
         User user = User.builder().email(email)
                 .username(email.split("@")[0])
                 .passwordHash(hashedPassword)
-                .role(UserRole.CUSTOMER)
+                .roles(new HashSet<>(List.of(defaultRole)))
                 .active(true)
                 .build();
 

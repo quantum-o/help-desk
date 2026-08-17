@@ -1,11 +1,12 @@
 package com.quantum.modmail.user.entity;
 
+import com.quantum.modmail.authorization.role.entity.Role;
 import com.quantum.modmail.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Audited;
 
-import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -29,9 +30,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "role_list", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)
     private boolean active;

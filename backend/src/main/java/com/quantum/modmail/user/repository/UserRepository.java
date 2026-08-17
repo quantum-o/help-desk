@@ -3,6 +3,7 @@ package com.quantum.modmail.user.repository;
 import com.quantum.modmail.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,6 +12,9 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
+
+    @EntityGraph(attributePaths = {"roles", "roles.permissions"})
+    Optional<User> findWithRolesAndPermissionsByEmail(String email);
 
     boolean existsByEmail(String email);
 

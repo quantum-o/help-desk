@@ -73,16 +73,16 @@ public class TicketService {
 
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
+//
+//        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+//        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
+//        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
+//                ticket.getAssignedTo() != null &&
+//                ticket.getAssignedTo().getId().equals(user.getId());
 
-        boolean isAdmin = user.getRole() == UserRole.ADMIN;
-        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
-                ticket.getAssignedTo() != null &&
-                ticket.getAssignedTo().getId().equals(user.getId());
-
-        if (!isAdmin && !isOwner && !isAssignedAgent)
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-                    "You do not have permission to access this ticket");
+//        if (!isAdmin && !isOwner && !isAssignedAgent)
+//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+//                    "You do not have permission to access this ticket");
 
         return TicketMapper.toResponse(ticket);
     }
@@ -91,10 +91,10 @@ public class TicketService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
 
-        if (user.getRole() != UserRole.ADMIN) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-                    "You do not have permission to assign tickets");
-        }
+//        if (user.getRole() != UserRole.ADMIN) {
+//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+//                    "You do not have permission to assign tickets");
+//        }
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
@@ -103,9 +103,9 @@ public class TicketService {
                 .orElseThrow(
                         () -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "Target user not found"));
 
-        if (targetUser.getRole() != UserRole.AGENT) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_USER_ROLE", "Target user must be an agent");
-        }
+//        if (targetUser.getRole() != UserRole.AGENT) {
+//            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_USER_ROLE", "Target user must be an agent");
+//        }
 
         ticket.setAssignedTo(targetUser);
         ticketRepository.save(ticket);
@@ -118,14 +118,14 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
 
-        boolean isAdmin = user.getRole() == UserRole.ADMIN;
-        boolean isAssignedAgent = user.getRole() == UserRole.AGENT
-                && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
-
-        if (!isAdmin && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-                    "You do not have permission to update tickets");
-        }
+//        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+//        boolean isAssignedAgent = user.getRole() == UserRole.AGENT
+//                && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
+//
+//        if (!isAdmin && !isAssignedAgent) {
+//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+//                    "You do not have permission to update tickets");
+//        }
 
         if (request.title() != null) {
             ticket.setTitle(request.title());
@@ -152,15 +152,15 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
 
-        boolean isAdmin = user.getRole() == UserRole.ADMIN;
-        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
-                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
-
-        if (!isAdmin && !isOwner && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-                    "You do not have permission to send messages to this ticket");
-        }
+//        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+//        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
+//        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
+//                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
+//
+//        if (!isAdmin && !isOwner && !isAssignedAgent) {
+//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+//                    "You do not have permission to send messages to this ticket");
+//        }
 
         TicketMessage ticketMessage = TicketMessage.builder()
                 .ticket(ticket)
@@ -186,15 +186,15 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
 
-        boolean isAdmin = user.getRole() == UserRole.ADMIN;
-        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
-        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
-                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
-
-        if (!isAdmin && !isOwner && !isAssignedAgent) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-                    "You do not have permission to send messages to this ticket");
-        }
+//        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+//        boolean isOwner = ticket.getCreatedBy().getId().equals(user.getId());
+//        boolean isAssignedAgent = user.getRole() == UserRole.AGENT &&
+//                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(user.getId());
+//
+//        if (!isAdmin && !isOwner && !isAssignedAgent) {
+//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
+//                    "You do not have permission to send messages to this ticket");
+//        }
 
         List<TicketMessage> messages;
 
