@@ -4,6 +4,7 @@ import com.quantum.modmail.common.response.ApiErrorResponse;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiErrorResponse> handleJwtException(JwtException ex) {
         ApiErrorResponse response = ApiErrorResponse.of("Token is invalid or malformed", "INVALID_TOKEN", null);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        ApiErrorResponse response = ApiErrorResponse.of("You dont have required access level", "AUTHORIZATION_DENIED", null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
