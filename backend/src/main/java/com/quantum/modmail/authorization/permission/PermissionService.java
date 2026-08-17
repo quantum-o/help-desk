@@ -23,11 +23,11 @@ public class PermissionService {
         return permissionRepository.findAll().stream().map(PermissionMapper::toResponse).collect(Collectors.toList());
     }
 
-    public PermissionResponse getPermissionByCode(String code) {
+    public Permission getPermissionByCode(String code) {
         Permission permission = permissionRepository.findByCode(code)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "PERMISSION_NOT_FOUND", "The permission with provided code does not exists."));
 
-        return PermissionMapper.toResponse(permission);
+        return permission;
     }
 
     public PermissionResponse getPermissionById(Long id) {
