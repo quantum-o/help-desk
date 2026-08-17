@@ -1,0 +1,30 @@
+package com.quantum.modmail.authorization.permission.entity;
+
+public enum PermissionCode {
+    ADMINISTRATOR,
+
+    USER_READ,
+    USER_CREATE,
+    USER_UPDATE,
+    USER_DELETE,
+
+    ROLE_READ,
+    ROLE_CREATE,
+    ROLE_UPDATE,
+    ROLE_DELETE,
+
+    PERMISSION_READ,
+    PERMISSION_CREATE,
+    PERMISSION_UPDATE,
+    PERMISSION_DELETE,
+
+    TICKET_READ,
+    TICKET_CREATE,
+    TICKET_UPDATE,
+    TICKET_DELETE,
+
+    CATEGORY_READ,
+    CATEGORY_CREATE,
+    CATEGORY_UPDATE,
+    CATEGORY_DELETE
+}

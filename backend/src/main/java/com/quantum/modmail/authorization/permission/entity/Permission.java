@@ -20,5 +20,11 @@ public class Permission extends BaseEntity {
     private String code;
 
     @Column()
+    private String name;
+
+    @Column()
     private String description;
+
+    @Column()
+    private String category;
 }
