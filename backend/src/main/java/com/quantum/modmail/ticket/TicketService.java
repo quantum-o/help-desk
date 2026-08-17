@@ -30,9 +30,8 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMessageRepository ticketMessageRepository;
 
-    public TicketResponse createTicket(CreateTicketRequest request, String userEmail) {
-        User ticketCreator = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "User not found"));
+    public TicketResponse createTicket(CreateTicketRequest request, String email) {
+        User ticketCreator = getUserByEmail(email);
 
         Ticket ticket = Ticket.builder()
                 .title(request.title())
@@ -49,16 +48,14 @@ public class TicketService {
     }
 
     public Page<TicketResponse> getMyTickets(String email, int page, int size) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "User not found"));
+        User user = getUserByEmail(email);
 
         Pageable pageable = PageRequest.of(page, size);
         return ticketRepository.findByCreatedBy(user, pageable).map(TicketMapper::toResponse);
     }
 
     public Page<TicketResponse> getTickets(String email, int page, int size) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = getUserByEmail(email);
 
         Pageable pageable = PageRequest.of(page, size);
         Page<TicketResponse> response = ticketRepository.findAll(pageable).map(TicketMapper::toResponse);
@@ -87,13 +84,7 @@ public class TicketService {
     }
 
     public void assignTicket(@NotNull UUID ticketId, AssignTicketRequest request, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
-
-//        if (user.getRole() != UserRole.ADMIN) {
-//            throw new BusinessException(HttpStatus.FORBIDDEN, "ACCESS_DENIED",
-//                    "You do not have permission to assign tickets");
-//        }
+        User user = getUserByEmail(email);
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
@@ -111,8 +102,7 @@ public class TicketService {
     }
 
     public TicketResponse updateTicket(@NotNull UUID ticketId, UpdateTicketRequest request, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = getUserByEmail(email);
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
@@ -145,8 +135,7 @@ public class TicketService {
     }
 
     public TicketMessageResponse addMessage(UUID ticketId, SendTicketMessageRequest request, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = getUserByEmail(email);
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
@@ -179,8 +168,7 @@ public class TicketService {
     }
 
     public CursorResponse<TicketMessageResponse> getMessages(UUID id, String email, String cursor, int size) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = getUserByEmail(email);
 
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "TICKET_NOT_FOUND", "Ticket not found"));
@@ -231,5 +219,10 @@ public class TicketService {
                 .build()).toList();
 
         return CursorResponse.of(response, hasMore, nextCursor);
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
     }
 }
