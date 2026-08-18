@@ -74,7 +74,7 @@ public class PermissionService {
         permissionRepository.deleteById(id);
     }
 
-    public boolean hasPermission(PermissionCode[] pList, boolean matchAny) {
+    public static boolean hasPermission(PermissionCode[] pList, boolean matchAny) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null) {
@@ -102,7 +102,7 @@ public class PermissionService {
         return match;
     }
 
-    public boolean hasPermission(PermissionCode permissionCode) {
+    public static boolean hasPermission(PermissionCode permissionCode) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null) {

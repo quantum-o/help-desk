@@ -30,7 +30,6 @@ public class TicketController {
     }
 
     @GetMapping("/my")
-    @RequiredPermission(code = {PermissionCode.TICKET_READ})
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> my(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size,
@@ -55,7 +54,6 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    @RequiredPermission(code = {PermissionCode.TICKET_READ})
     public ResponseEntity<ApiResponse<TicketResponse>> getTicket(@PathVariable UUID id, Authentication authentication) {
         String email = authentication.getName();
 
