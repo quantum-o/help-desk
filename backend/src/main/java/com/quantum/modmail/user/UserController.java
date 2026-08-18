@@ -3,6 +3,7 @@ package com.quantum.modmail.user;
 import com.quantum.modmail.common.response.ApiResponse;
 
 import com.quantum.modmail.user.dto.CreateUserRequest;
+import com.quantum.modmail.user.dto.MeResponse;
 import com.quantum.modmail.user.dto.UpdateUserRequest;
 import com.quantum.modmail.user.dto.UserResponse;
 import com.quantum.modmail.authorization.permission.entity.PermissionCode;
@@ -25,9 +26,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> me(Authentication authentication) {
+    public ResponseEntity<ApiResponse<MeResponse>> me(Authentication authentication) {
         String email = authentication.getName();
-        UserResponse meResponse = userService.getMe(email);
+        MeResponse meResponse = userService.getMe(email);
 
         return ResponseEntity.ok(ApiResponse.ok("User info", meResponse));
     }

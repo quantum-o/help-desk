@@ -1,8 +1,12 @@
 package com.quantum.modmail.user.mapper;
 
+import com.quantum.modmail.authorization.permission.entity.Permission;
 import com.quantum.modmail.authorization.role.entity.Role;
+import com.quantum.modmail.user.dto.MeResponse;
 import com.quantum.modmail.user.dto.UserResponse;
 import com.quantum.modmail.user.entity.User;
+
+import java.util.Comparator;
 
 public class UserMapper {
     public static UserResponse toResponse(User user) {
@@ -15,5 +19,21 @@ public class UserMapper {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+    }
+
+    public static MeResponse toMeResponse(User user) {
+        return new MeResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRoles().stream()
+                        .flatMap(role -> role.getPermissions().stream())
+                        .map(Permission::getCode)
+                        .distinct()
+                        .sorted(Comparator.naturalOrder())
+                        .toList(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
     }
 }

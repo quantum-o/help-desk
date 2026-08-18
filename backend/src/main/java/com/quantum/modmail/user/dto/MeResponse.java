@@ -1,14 +1,14 @@
 package com.quantum.modmail.user.dto;
 
-import com.quantum.modmail.user.entity.UserRole;
-
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record MeResponse(
         UUID id,
+        String username,
         String email,
-        UserRole role,
+        List<String> permissions,
         Instant createdAt,
         Instant updatedAt) {
 }
