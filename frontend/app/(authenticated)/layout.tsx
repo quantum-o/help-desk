@@ -8,7 +8,7 @@ import {
 import useAuthStore from '@/features/authentication/auth-store';
 import useMe from '@/features/authentication/hooks/use-me';
 import { SidebarItem } from '@/types/sidebar';
-import { IconCategory, IconDashboard, IconTicket } from '@tabler/icons-react';
+import { IconCategory, IconDashboard, IconTicket, IconUsersGroup } from '@tabler/icons-react';
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -27,6 +27,11 @@ const navList: SidebarItem[] = [
 		name: 'Categories',
 		url: '/categories',
 		icon: <IconCategory />,
+	},
+	{
+		name: 'Roles',
+		url: '/roles',
+		icon: <IconUsersGroup />,
 	},
 ];
 
