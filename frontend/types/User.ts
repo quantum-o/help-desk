@@ -1,5 +1,12 @@
+import { Permission } from "@/features/authorization/types/Permission";
+import { UUID } from "crypto";
+
 export type User = {
-    id: string;
+    id: number;
+    username: string;
     email: string;
-    role: "ADMIN" | "AGENT" | "CUSTOMER";
-}
+    role: UUID[];
+    permissions: Permission[];
+    createdAt: string;
+    updatedAt: string;
+};
