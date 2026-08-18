@@ -3,14 +3,14 @@
 import PermissionList from '@/components/permission-list';
 import { Button } from '@/components/ui/button';
 import useGetRoles from '@/features/authorization/hooks/use-get-roles';
-import { RoleResponse } from '@/features/authorization/types/RoleResponse';
+import { Role } from '@/features/authorization/types/Role';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 const Roles = () => {
 	const rolesQuery = useGetRoles();
 
-	const [selectedRole, setSelectedRole] = useState<RoleResponse | null>(null);
+	const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
 	useEffect(() => {
         if(selectedRole) return;
