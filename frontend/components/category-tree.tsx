@@ -29,7 +29,8 @@ function CategoryTreeItem({
 	setSelectedParentCategoryId: (id: number | null) => void;
 }) {
 	const [open, setOpen] = useState(false);
-	const hasChildren = category.children && category.children.filter(c => !c.passive).length > 0;
+	const hasChildren = category.children && category.children.length > 0;
+	const hasNonPassiveChildren = category.children && category.children.some((child) => !child.passive);
 	const useDeleteCategoryMutation = useDeleteCategory();
 	const useUpdateCategoryMutation = useUpdateCategory();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
