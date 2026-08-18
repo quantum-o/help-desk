@@ -6,6 +6,8 @@ import { type DataTableFeatures } from '../../data-table';
 import { ITicket } from '@/features/tickets/types/ITicket';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { TicketPriority, TicketStatus } from '@/features/tickets/types/enums';
+import { cn } from '@/lib/utils';
 
 const columnHelper = createColumnHelper<DataTableFeatures, ITicket>();
 
@@ -37,9 +39,24 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => isAdmin,
+		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('status', {
 			header: 'Status',
+			cell: ({ row }) => {
+				const status = row.original.status;
+				return (
+					<span
+						className={cn('px-2 py-1 rounded-md text-white', {
+							'bg-green-500': status === TicketStatus.OPEN,
+							'bg-yellow-500': status === TicketStatus.IN_PROGRESS,
+							'bg-red-500': status === TicketStatus.CLOSED,
+							'bg-blue-700': status === TicketStatus.RESOLVED,
+						})}
+					>
+						{status}
+					</span>
+				);
+			},
 		}),
 	},
 	{
@@ -55,6 +72,28 @@ const columns = [
 		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('priority', {
 			header: 'Priority',
+			cell: ({ row }) => {
+				const priority = row.original.priority;
+				return (
+					<span
+						// className={`px-2 py-1 rounded-md text-white ${
+						// 	priority === TicketPriority.HIGH
+						// 		? 'bg-red-500'
+						// 		: priority === TicketPriority.MEDIUM
+						// 			? 'bg-yellow-500'
+						// 			: 'bg-green-500'
+						// }`}
+						className={cn('px-2 py-1 rounded-md text-white', {
+							'bg-red-800': priority === TicketPriority.URGENT,
+							'bg-red-500': priority === TicketPriority.HIGH,
+							'bg-yellow-500': priority === TicketPriority.MEDIUM,
+							'bg-green-500': priority === TicketPriority.LOW,
+						})}
+					>
+						{priority}
+					</span>
+				);
+			},
 		}),
 	},
 	{
