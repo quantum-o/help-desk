@@ -2,14 +2,13 @@ package com.quantum.modmail.authorization.role;
 
 import com.quantum.modmail.authorization.permission.entity.PermissionCode;
 import com.quantum.modmail.authorization.role.dto.RoleDefinition;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 import java.util.Set;
 
+@NoArgsConstructor
 public final class RoleRegistry {
-    private RoleRegistry() {
-    }
-
     public static final Map<String, RoleDefinition> DEFINITIONS = Map.ofEntries(
             Map.entry("SUPERADMIN",
                     new RoleDefinition(
@@ -48,7 +47,9 @@ public final class RoleRegistry {
                     new RoleDefinition(
                             "Everyone",
 
-                            Set.of()
+                            Set.of(
+                                    PermissionCode.TICKET_CREATE
+                            )
                     )
             ));
 }
