@@ -18,11 +18,7 @@ const page = (): React.ReactNode => {
 	}
 
 	if (isError) {
-		return (
-			<div>
-				Error: {error instanceof Error ? error.message : 'Unknown error'}
-			</div>
-		);
+		return <div>Error: {error || 'Unknown error'}</div>;
 	}
 
 	const pageResponse = data.data;
