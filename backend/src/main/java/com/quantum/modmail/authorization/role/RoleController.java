@@ -29,14 +29,12 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@GetMapping()
-	@RequiredPermission(code = {PermissionCode.ROLE_READ})
 	public ResponseEntity<ApiResponse<List<RoleResponse>>> getAllRoles() {
 		List<RoleResponse> responses = roleService.getAllRoles();
 		return ResponseEntity.ok(ApiResponse.ok("Success", responses));
 	}
 
 	@GetMapping("/{id}")
-	@RequiredPermission(code = {PermissionCode.ROLE_READ})
 	public ResponseEntity<ApiResponse<RoleResponse>> getRole(@PathVariable UUID id) {
 		RoleResponse response = roleService.getRoleById(id);
 		return ResponseEntity.ok(ApiResponse.ok("Success", response));
