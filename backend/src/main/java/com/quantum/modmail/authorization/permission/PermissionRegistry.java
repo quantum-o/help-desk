@@ -125,4 +125,12 @@ public final class PermissionRegistry {
 							"Delete Categories",
 							"Allows deleting categories",
 							"CATEGORY_MANAGEMENT")));
+
+	public static PermissionDefinition getDefinition(String code) {
+		PermissionCode permissionCode = PermissionCode.valueOf(code);
+		if (permissionCode == null) {
+			throw new IllegalArgumentException("Invalid permission code: " + code);
+		}
+		return DEFINITIONS.get(permissionCode);
+	};
 }

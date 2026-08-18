@@ -9,6 +9,7 @@ public record PermissionResponse(
         Long id,
         String code,
         String description,
+        String category,
         Instant createdAt,
         Instant updatedAt
 ) {
