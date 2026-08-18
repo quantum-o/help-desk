@@ -1,5 +1,7 @@
 package com.quantum.modmail.user;
 
+import com.quantum.modmail.authorization.role.entity.Role;
+import com.quantum.modmail.authorization.role.repository.RoleRepository;
 import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.user.dto.CreateUserRequest;
 import com.quantum.modmail.user.dto.MeResponse;
@@ -19,12 +21,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MeResponse getMe(String email) {
@@ -41,7 +45,7 @@ public class UserService {
     public Page<UserResponse> getUsers(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        if(search.isBlank())
+        if (search.isBlank())
             return userRepository.findByDeletedFalse(pageable).map(UserMapper::toResponse);
 
         return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(search, search, pageable).map(UserMapper::toResponse);
@@ -74,8 +78,12 @@ public class UserService {
 
         if (request.username() != null)
             user.setUsername(request.username());
-//        if (request.role() != null)
-//            user.setRole(UserRole.valueOf(request.role()));
+        if (request.role() != null) {
+            Set<Role> roles = new HashSet<>(
+                    roleRepository.findAllById(request.role())
+            );
+            user.setRoles(roles);
+        }
         if (request.password() != null)
             user.setPasswordHash(passwordEncoder.encode(request.password()));
         if (request.active() != null)
