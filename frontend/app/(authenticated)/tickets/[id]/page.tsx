@@ -11,7 +11,7 @@ import {
 	InputGroupInput,
 } from '@/components/ui/input-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import useAuthStore from '@/features/auth/auth-store';
+import useAuthStore from '@/features/authentication/auth-store';
 import useGetTicketMessages from '@/features/tickets/hooks/use-get-messages';
 import useGetTicket from '@/features/tickets/hooks/use-get-ticket';
 import useSendMessage from '@/features/tickets/hooks/use-send-message';

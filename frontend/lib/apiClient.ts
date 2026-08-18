@@ -1,5 +1,5 @@
-import { refresh } from "@/features/auth/api/refresh";
-import useAuthStore from "@/features/auth/auth-store";
+import { refresh } from "@/features/authentication/api/refresh";
+import useAuthStore from "@/features/authentication/auth-store";
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8080";

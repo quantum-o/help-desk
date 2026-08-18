@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { my } from "../api/my";
-import useAuthStore from "@/features/auth/auth-store";
+import useAuthStore from "@/features/authentication/auth-store";
 import { getTickets } from "../api/get-tickets";
 
 export default function useGetTickets(pagination: { pageIndex: number; pageSize: number }) {

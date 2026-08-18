@@ -2,7 +2,7 @@ import HeaderText from '../header-text';
 import { ITicket } from '@/features/tickets/types/ITicket';
 import { DataTable } from '../data-table';
 import getColumns from './table/columns';
-import useAuthStore from '@/features/auth/auth-store';
+import useAuthStore from '@/features/authentication/auth-store';
 
 type Props = {
 	data: ITicket[];

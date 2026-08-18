@@ -10,8 +10,8 @@ import {
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useForm } from '@tanstack/react-form';
-import LoginRequest from '@/features/auth/types/LoginRequest';
-import useLogin from '@/features/auth/hooks/use-login';
+import LoginRequest from '@/features/authentication/types/LoginRequest';
+import useLogin from '@/features/authentication/hooks/use-login';
 import { useRouter } from 'next/navigation';
 
 export default function Page() {

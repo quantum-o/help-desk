@@ -5,8 +5,8 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from '@/components/ui/sidebar';
-import useAuthStore from '@/features/auth/auth-store';
-import useMe from '@/features/auth/hooks/use-me';
+import useAuthStore from '@/features/authentication/auth-store';
+import useMe from '@/features/authentication/hooks/use-me';
 import { SidebarItem } from '@/types/sidebar';
 import { IconCategory, IconDashboard, IconTicket } from '@tabler/icons-react';
 import { redirect } from 'next/navigation';

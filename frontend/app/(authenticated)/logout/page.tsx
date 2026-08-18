@@ -1,4 +1,4 @@
-import { logout } from '@/features/auth/api/logout'
+import { logout } from '@/features/authentication/api/logout'
 import { redirect } from 'next/navigation';
 
 const page = () => {

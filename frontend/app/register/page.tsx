@@ -11,8 +11,8 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui
 import { Input } from '@/components/ui/input';
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
-import RegisterRequest from '@/features/auth/types/RegisterRequest';
-import useRegister from '@/features/auth/hooks/use-register';
+import RegisterRequest from '@/features/authentication/types/RegisterRequest';
+import useRegister from '@/features/authentication/hooks/use-register';
 
 export default function Page() {
 	const requestLogin = useRegister();

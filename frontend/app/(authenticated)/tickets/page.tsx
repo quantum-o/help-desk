@@ -2,7 +2,7 @@
 
 import AllTickets from '@/components/tickets/AllTickets';
 import MyTickets from '@/components/tickets/MyTickets';
-import useAuthStore from '@/features/auth/auth-store';
+import useAuthStore from '@/features/authentication/auth-store';
 import useGetTickets from '@/features/tickets/hooks/use-get-tickets';
 import { useState } from 'react';
 

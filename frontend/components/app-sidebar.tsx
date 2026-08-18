@@ -7,8 +7,8 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { logout } from '@/features/auth/api/logout';
-import useAuthStore from '@/features/auth/auth-store';
+import { logout } from '@/features/authentication/api/logout';
+import useAuthStore from '@/features/authentication/auth-store';
 import { SidebarItem } from '@/types/sidebar';
 import { IconLogout, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
