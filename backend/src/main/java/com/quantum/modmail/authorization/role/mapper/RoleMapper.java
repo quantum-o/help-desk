@@ -9,6 +9,7 @@ public class RoleMapper {
         return RoleResponse.builder()
                 .id(role.getId())
                 .code(role.getCode())
+                .name(role.getName())
                 .permissionList(role.getPermissions().stream().map(Permission::getCode).toList())
                 .createdAt(role.getCreatedAt())
                 .updatedAt(role.getUpdatedAt())
