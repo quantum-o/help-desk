@@ -5,6 +5,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { type DataTableFeatures } from '../../data-table';
 import { ITicket } from '@/features/tickets/types/ITicket';
 import { Checkbox } from '@/components/ui/checkbox';
+import Link from 'next/link';
 
 const columnHelper = createColumnHelper<DataTableFeatures, ITicket>();
 
@@ -45,6 +46,9 @@ const columns = [
 		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('title', {
 			header: 'Title',
+			cell: ({ row }) => (
+				<Link href={`/tickets/${row.original.id}`}>{row.original.title}</Link>
+			),
 		}),
 	},
 	{
