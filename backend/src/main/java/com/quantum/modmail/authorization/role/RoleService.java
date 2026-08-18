@@ -1,7 +1,7 @@
 package com.quantum.modmail.authorization.role;
 
-import com.quantum.modmail.authorization.permission.PermissionService;
 import com.quantum.modmail.authorization.permission.entity.Permission;
+import com.quantum.modmail.authorization.permission.repository.PermissionRepository;
 import com.quantum.modmail.authorization.role.dto.CreateRoleRequest;
 import com.quantum.modmail.authorization.role.dto.RoleResponse;
 import com.quantum.modmail.authorization.role.dto.UpdateRoleRequest;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class RoleService {
     private final RoleRepository roleRepository;
-    private final PermissionService permissionService;
+    private final PermissionRepository permissionRepository;
 
     public List<RoleResponse> getAllRoles() {
         return roleRepository.findAll().stream().map(RoleMapper::toResponse).collect(Collectors.toList());
@@ -62,11 +62,9 @@ public class RoleService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "ROLE_NOT_FOUND", "The role with provided code does not exists."));
 
         if (request.permissions() != null) {
-            Set<Permission> newPermissions = new HashSet<>();
-            for (String pCode : request.permissions()) {
-                Permission perm = permissionService.getPermissionByCode(pCode);
-                newPermissions.add(perm);
-            }
+            Set<Permission> newPermissions = new HashSet<>(
+                    permissionRepository.findAllByCode(request.permissions())
+            );
 
             role.setPermissions(newPermissions);
         }

@@ -1,10 +1,10 @@
 package com.quantum.modmail.authorization.role.dto;
 
-import java.util.List;
+import java.util.Set;
 
 public record UpdateRoleRequest(
         String code,
         String name,
-        List<String> permissions
+        Set<String> permissions
 ) {
 }
