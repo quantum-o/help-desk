@@ -20,9 +20,12 @@ public class ApplicationSeeder implements CommandLineRunner {
     private final TicketSeeder ticketSeeder;
     @Override
     public void run(String... args) {
-        permissionSeeder.seed();
-        roleSeeder.seed();
-
+        if (Arrays.asList(args).contains("--seed-permissions")) {
+            permissionSeeder.seed();
+        }
+        if (Arrays.asList(args).contains("--seed-roles")) {
+            roleSeeder.seed();
+        }
         if (Arrays.asList(args).contains("--seed-users")) {
             userSeeder.seed();
         }
