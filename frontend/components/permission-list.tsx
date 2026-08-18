@@ -6,8 +6,8 @@ import {
 	CollapsibleTrigger,
 } from './ui/collapsible';
 import { IconChevronsDown, IconSearch } from '@tabler/icons-react';
-import { useCallback, useState } from 'react';
-import { RoleResponse } from '@/features/authorization/types/RoleResponse';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Role } from '@/features/authorization/types/Role';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './ui/input-group';
 import { useForm } from '@tanstack/react-form';
 import { Switch } from './ui/switch';
@@ -15,7 +15,7 @@ import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 import { debounce } from 'lodash-es';
 import useUpdateRole from '@/features/authorization/hooks/use-update-role';
-import { notFound } from 'next/navigation';
+import { Permission } from '@/features/authorization/types/Permission';
 
 const PermissionCategory = ({
 	category,
@@ -23,7 +23,7 @@ const PermissionCategory = ({
 	form,
 }: {
 	category: string;
-	permissions: any[];
+	permissions: Permission[];
 	form: ReturnType<typeof useForm>;
 }) => {
 	const [isOpen, setIsOpen] = useState(true);
@@ -89,25 +89,8 @@ const PermissionCategory = ({
 	);
 };
 
-const PermissionList = ({
-	activeRole,
-}: {
-	activeRole: RoleResponse | null;
-}) => {
+const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 	const permissionsQuery = useGetPermissions();
-
-	const permissionsByCategory = permissionsQuery.data?.data.reduce(
-		(acc: Record<string, any[]>, permission) => {
-			if (!acc[permission.category]) {
-				acc[permission.category] = [];
-			}
-			acc[permission.category].push(permission);
-			return acc;
-		},
-		{},
-	);
-
-	const [isDirty, setIsDirty] = useState(false);
 
 	const form = useForm({
 		defaultValues: {
@@ -116,38 +99,52 @@ const PermissionList = ({
 		onSubmit: async ({ value }) => {
 			handleUpdateRolePermissions(value.permissions);
 		},
-		listeners: {
-			onChange: (form) => {
-				debounce(() => {
-					setIsDirty(!form.formApi.state.isDefaultValue);
-				}, 300)();
-			},
-		},
+		formId: `permission-form-${activeRole?.id}`,
 	});
 
 	const updateRole = useUpdateRole();
 	const handleUpdateRolePermissions = useCallback(
 		async (permissions: string[]) => {
-			if (!activeRole?.id) {
-				return;
-			}
+			if (!activeRole?.id) return;
 
-			updateRole.mutate(
-				{
-					id: activeRole.id ?? '',
-					permissions,
-				},
-				{
-					onSuccess: () => {
-						form.reset({
-							permissions,
-						}, { keepDefaultValues: false });
-						setIsDirty(false);
-					},
-				},
-			);
+			await updateRole.mutateAsync({
+				id: activeRole.id,
+				permissions,
+			});
+
+			form.reset({ permissions }, { keepDefaultValues: false });
 		},
-		[activeRole?.id],
+		[activeRole?.id, updateRole, form],
+	);
+
+	const [searchPermission, setSearchPermission] = useState('');
+	const debouncedSearch = useMemo(
+		() =>
+			debounce((value: string) => {
+				setSearchPermission(value);
+			}, 300),
+		[],
+	);
+
+	useEffect(() => {
+		return () => {
+			debouncedSearch.cancel();
+		};
+	}, [debouncedSearch]);
+
+	const filteredPermissions =
+		permissionsQuery.data?.data.filter((permission) =>
+			permission.code.toLowerCase().includes(searchPermission.toLowerCase()),
+		) || [];
+
+	const permissionsByCategory = filteredPermissions?.reduce(
+		(acc: Record<string, Permission[]>, permission) => {
+			if (!acc[permission.category]) acc[permission.category] = [];
+
+			acc[permission.category].push(permission);
+			return acc;
+		},
+		{} as Record<string, Permission[]>,
 	);
 
 	return (
@@ -159,7 +156,12 @@ const PermissionList = ({
 				<InputGroupAddon>
 					<IconSearch />
 				</InputGroupAddon>
-				<InputGroupInput placeholder="Search Permissions" />
+				<InputGroupInput
+					placeholder="Search Permissions"
+					onChange={(e) => {
+						debouncedSearch(e.target.value);
+					}}
+				/>
 			</InputGroup>
 			<div className="flex flex-col gap-4 overflow-y-auto">
 				<form onSubmit={form.handleSubmit}>
@@ -180,7 +182,7 @@ const PermissionList = ({
 				className={cn(
 					'w-full absolute bottom-6 left-1/2 z-50 -translate-x-1/2',
 					'transition-all duration-200',
-					isDirty
+					form.state.isDirty
 						? 'translate-y-0 opacity-100'
 						: 'pointer-events-none translate-y-4 opacity-0',
 				)}
@@ -192,14 +194,21 @@ const PermissionList = ({
 						</p>
 
 						<div className="flex items-center gap-2">
-							<Button variant="outline">Discard</Button>
-
 							<Button
+								variant="outline"
 								onClick={(e) => {
 									e.stopPropagation();
 									e.preventDefault();
-									form.handleSubmit();
+									form.reset(undefined, { keepDefaultValues: true });
 								}}
+							>
+								Discard
+							</Button>
+
+							<Button
+								type="submit"
+								form={form.formId}
+								disabled={updateRole.isPending}
 							>
 								Save changes
 							</Button>
