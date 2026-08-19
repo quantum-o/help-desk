@@ -9,7 +9,13 @@ import useAuthStore from '@/features/authentication/auth-store';
 import useMe from '@/features/authentication/hooks/use-me';
 import { PermissionCode } from '@/types/PermissionCode';
 import { SidebarItem } from '@/types/sidebar';
-import { IconCategory, IconDashboard, IconTicket, IconUsers, IconUsersGroup } from '@tabler/icons-react';
+import {
+	IconCategory,
+	IconDashboard,
+	IconTicket,
+	IconUsers,
+	IconUsersGroup,
+} from '@tabler/icons-react';
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -46,7 +52,11 @@ const navList: SidebarItem[] = [
 	},
 ];
 
-const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React.ReactNode => {
+const AuthenticatedLayout = ({
+	children,
+}: {
+	children: React.ReactNode;
+}): React.ReactNode => {
 	const { data, isLoading, isError } = useMe();
 	const { hasPermission } = useAuthStore();
 
@@ -55,10 +65,14 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React
 			redirect('/login');
 		}
 
-		useAuthStore.getState().setUser(data?.data ?? null);
+		if (data?.success && data?.data) {
+			useAuthStore.getState().setUser(data.data);
+		}
 	}, [isLoading, isError, data?.data]);
-	
-	const filteredNavList = navList.filter((item) => hasPermission(item.requiredPermission));
+
+	const filteredNavList = navList.filter((item) =>
+		hasPermission(item.requiredPermission),
+	);
 
 	if (isLoading) {
 		return <div className="">Loading</div>;
