@@ -63,7 +63,7 @@ public class RoleService {
 
         if (request.permissions() != null) {
             Set<Permission> newPermissions = new HashSet<>(
-                    permissionRepository.findAllByCode(request.permissions())
+                    permissionRepository.findAllByCodeIn(request.permissions())
             );
 
             role.setPermissions(newPermissions);

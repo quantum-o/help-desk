@@ -9,5 +9,5 @@ import java.util.Set;
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
     Optional<Permission> findByCode(String code);
 
-    Set<Permission> findAllByCode(Set<String> codes);
+    Set<Permission> findAllByCodeIn(Set<String> codes);
 }
