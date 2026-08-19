@@ -57,7 +57,9 @@ const Roles = () => {
 				</div>
 			</div>
 			<div className="w-3/4 h-full flex flex-col px-4 py-2 scrollbar-thin scrollbar-thumb-accent scrollbar-track-transparent">
-				<PermissionList activeRole={selectedRole} key={selectedRole?.id} />
+				{selectedRole && (
+					<PermissionList activeRole={selectedRole} key={selectedRole?.id} />
+				)}
 			</div>
 		</div>
 	);
