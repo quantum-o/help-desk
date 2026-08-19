@@ -48,6 +48,7 @@ const navList: SidebarItem[] = [
 
 const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React.ReactNode => {
 	const { data, isLoading, isError } = useMe();
+	const { hasPermission } = useAuthStore();
 
 	useEffect(() => {
 		if (!isLoading && isError) {
@@ -56,6 +57,8 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React
 
 		useAuthStore.getState().setUser(data?.data ?? null);
 	}, [isLoading, isError, data?.data]);
+	
+	const filteredNavList = navList.filter((item) => hasPermission(item.requiredPermission));
 
 	if (isLoading) {
 		return <div className="">Loading</div>;
@@ -74,7 +77,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React
 				</div>
 
 				<div className="flex flex-1 min-h-0">
-					<AppSidebar items={navList} className="pt-16" />
+					<AppSidebar items={filteredNavList} className="pt-16" />
 
 					<SidebarInset className="min-h-0 min-w-0">
 						<main className="h-full overflow-y-auto">{children}</main>

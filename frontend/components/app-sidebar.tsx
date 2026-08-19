@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/sidebar';
 import { logout } from '@/features/authentication/api/logout';
 import useAuthStore from '@/features/authentication/auth-store';
+import { PermissionCode } from '@/types/PermissionCode';
 import { SidebarItem } from '@/types/sidebar';
 import { IconLogout, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -18,7 +19,10 @@ export interface AppSidebarProps {
 	className?: string;
 }
 
-export default function AppSidebar({ items, className }: AppSidebarProps): React.ReactNode {
+export default function AppSidebar({
+	items,
+	className,
+}: AppSidebarProps): React.ReactNode {
 	const { hasPermission } = useAuthStore();
 	const handleLogout = async () => {
 		try {
@@ -39,20 +43,22 @@ export default function AppSidebar({ items, className }: AppSidebarProps): React
 								variant="outline"
 								className="bg-indigo-500 text-white hover:bg-indigo-600 transition-colors duration-200 justify-center"
 							>
-								<Link
-									href="/tickets/new"
-									className="flex w-full items-center justify-center gap-2"
-								>
-									<IconPlus />
-									Create Ticket
-								</Link>
+								{hasPermission(PermissionCode.TICKET_CREATE) && (
+									<Link
+										href="/tickets/new"
+										className="flex w-full items-center justify-center gap-2"
+									>
+										<IconPlus />
+										Create Ticket
+									</Link>
+								)}
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
 				</SidebarGroup>
 				<SidebarGroup>
 					<SidebarMenu>
-						{items.filter((item) => hasPermission(item.requiredPermission)).map((item) => (
+						{items.map((item) => (
 							<SidebarMenuItem key={item.name}>
 								<SidebarMenuButton>
 									<Link
