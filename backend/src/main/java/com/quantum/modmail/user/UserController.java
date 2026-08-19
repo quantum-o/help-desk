@@ -79,7 +79,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @RequiredPermission(code = {PermissionCode.USER_DELETE})
-    public ResponseEntity<Null> updateUser(
+    public ResponseEntity<Null> deleteUser(
             @PathVariable UUID id,
             Authentication authentication
     ) {
