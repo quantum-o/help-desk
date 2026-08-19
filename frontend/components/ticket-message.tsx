@@ -2,14 +2,14 @@ import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { cn } from '@/lib/utils';
 import { TicketMessagesResponse } from '@/features/tickets/types/TicketMessagesResponse';
+import useAuthStore from '@/features/authentication/auth-store';
 
-type Props = TicketMessagesResponse & {
-	ticketAuthor: string;
-};
+type Props = TicketMessagesResponse;
 
 const TicketMessage = (props: Props) => {
-	const isSentByUser = props.senderId === props.ticketAuthor;
+	const { user } = useAuthStore();
 
+	const isSentByUser = user?.id === props.senderId;
 	return (
 		<div className={cn('flex', isSentByUser ? 'justify-end' : 'justify-start')}>
 			<div className="max-w-[70%]">
@@ -45,7 +45,9 @@ const TicketMessage = (props: Props) => {
 					)}
 				>
 					<CardContent className="px-4">
-						<p className="whitespace-pre-wrap leading-3 text-left">{props.message}</p>
+						<p className="whitespace-pre-wrap leading-3 text-left">
+							{props.message}
+						</p>
 					</CardContent>
 				</Card>
 			</div>
