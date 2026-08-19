@@ -89,12 +89,14 @@ const PermissionCategory = ({
 	);
 };
 
+const normalizePermissions = (permissions: string[]) => permissions.sort();
+
 const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 	const permissionsQuery = useGetPermissions();
 
 	const form = useForm({
 		defaultValues: {
-			permissions: activeRole?.permissionList ?? [],
+			permissions: normalizePermissions(activeRole?.permissionList ?? []),
 		},
 		onSubmit: async ({ value }) => {
 			handleUpdateRolePermissions(value.permissions);
@@ -112,7 +114,10 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 				permissions,
 			});
 
-			form.reset({ permissions }, { keepDefaultValues: false });
+			form.reset(
+				{ permissions: normalizePermissions(permissions) },
+				{ keepDefaultValues: false },
+			);
 		},
 		[activeRole?.id, updateRole, form],
 	);
@@ -178,44 +183,48 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 						)}
 				</form>
 			</div>
-			<div
-				className={cn(
-					'w-full absolute bottom-6 left-1/2 z-50 -translate-x-1/2',
-					'transition-all duration-200',
-					form.state.isDirty
-						? 'translate-y-0 opacity-100'
-						: 'pointer-events-none translate-y-4 opacity-0',
+			<form.Subscribe selector={(state) => state.isDefaultValue}>
+				{(isDefault) => (
+					<div
+						className={cn(
+							'w-full absolute bottom-6 left-1/2 z-50 -translate-x-1/2',
+							'transition-all duration-200 delay-200',
+							!isDefault
+								? 'translate-y-0 opacity-100'
+								: 'pointer-events-none translate-y-4 opacity-0',
+						)}
+					>
+						<Card className="shadow-lg w-full">
+							<CardContent className="flex items-center justify-between gap-4">
+								<p className="text-muted-foreground text-sm">
+									Save or discard your changes.
+								</p>
+
+								<div className="flex items-center gap-2">
+									<Button
+										variant="outline"
+										onClick={(e) => {
+											e.stopPropagation();
+											e.preventDefault();
+											form.reset(undefined, { keepDefaultValues: true });
+										}}
+									>
+										Discard
+									</Button>
+
+									<Button
+										type="submit"
+										form={form.formId}
+										disabled={updateRole.isPending}
+									>
+										Save changes
+									</Button>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
 				)}
-			>
-				<Card className="shadow-lg w-full">
-					<CardContent className="flex items-center justify-between gap-4">
-						<p className="text-muted-foreground text-sm">
-							Save or discard your changes.
-						</p>
-
-						<div className="flex items-center gap-2">
-							<Button
-								variant="outline"
-								onClick={(e) => {
-									e.stopPropagation();
-									e.preventDefault();
-									form.reset(undefined, { keepDefaultValues: true });
-								}}
-							>
-								Discard
-							</Button>
-
-							<Button
-								type="submit"
-								form={form.formId}
-								disabled={updateRole.isPending}
-							>
-								Save changes
-							</Button>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
+			</form.Subscribe>
 		</div>
 	);
 };
