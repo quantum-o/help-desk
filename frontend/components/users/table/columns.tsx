@@ -8,6 +8,7 @@ import { User } from '@/types/User';
 import useGetRoles from '@/features/authorization/hooks/use-get-roles';
 import { PermissionCode } from '@/types/PermissionCode';
 import useAuthStore from '@/features/authentication/auth-store';
+import UserActions from '@/components/user-actions';
 
 const columnHelper = createColumnHelper<DataTableFeatures, User>();
 
@@ -76,6 +77,13 @@ const columns = [
 		column: columnHelper.accessor('updatedAt', {
 			header: 'Last Updated',
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
+		}),
+	},
+	{
+		requiredPermission: PermissionCode.USER_UPDATE,
+		column: columnHelper.display({
+			header: 'Actions',
+			cell: (info) => <UserActions user={info.row.original} />,
 		}),
 	},
 ].filter((column) => column !== null);

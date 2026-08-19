@@ -17,6 +17,7 @@ type ConfirmationDialogProps = {
 	confirmText?: string;
 	cancelText?: string;
 	onConfirm: () => void | Promise<void>;
+	performAction?: boolean;
 };
 
 export function ConfirmationDialog({
@@ -27,6 +28,7 @@ export function ConfirmationDialog({
 	confirmText = "Confirm",
 	cancelText = "Cancel",
 	onConfirm,
+	performAction = false,
 }: ConfirmationDialogProps) {
 	const handleConfirm = async () => {
 		await onConfirm();
@@ -47,7 +49,7 @@ export function ConfirmationDialog({
 				<AlertDialogFooter>
 					<AlertDialogCancel>{cancelText}</AlertDialogCancel>
 
-					<AlertDialogAction onClick={handleConfirm}>
+					<AlertDialogAction onClick={handleConfirm} disabled={performAction}>
 						{confirmText}
 					</AlertDialogAction>
 				</AlertDialogFooter>

@@ -1,9 +1,14 @@
 import z from "zod";
 
-const updateUserRequestSchema = z.object({
-    username: z.string().optional(),
-    roles: z.set(z.string()).optional(),
-    active: z.boolean().optional(),
+const UpdateUserRequest = z.object({
+    username: z.string("Username cannot be empty")
+        .min(2, "Username must be at least 2 characters")
+        .max(25, "Username cannot exceed 25 characters"),
+    roles: z.array(z.uuid("Invalid role ID")),
+    active: z.boolean("Active status cannot be empty"),
 });
 
-export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
+type UpdateUserRequest = z.infer<typeof UpdateUserRequest>;
+
+export default UpdateUserRequest;
+export type { UpdateUserRequest };
