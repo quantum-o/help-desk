@@ -30,7 +30,6 @@ const navList: SidebarItem[] = [
 		name: 'Tickets',
 		url: '/tickets',
 		icon: <IconTicket />,
-		requiredPermission: PermissionCode.TICKET_READ,
 	},
 	{
 		name: 'Categories',
@@ -71,7 +70,7 @@ const AuthenticatedLayout = ({
 	}, [isLoading, isError, data?.data]);
 
 	const filteredNavList = navList.filter((item) =>
-		hasPermission(item.requiredPermission),
+		item.requiredPermission ? hasPermission(item.requiredPermission) : true,
 	);
 
 	if (isLoading) {
