@@ -14,7 +14,7 @@ public class UserMapper {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .role(user.getRoles().stream().map(Role::getId).toList())
+                .roles(user.getRoles().stream().map(Role::getId).toList())
                 .active(user.isActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -22,18 +22,20 @@ public class UserMapper {
     }
 
     public static MeResponse toMeResponse(User user) {
-        return new MeResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getRoles().stream()
+        return MeResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .roles(user.getRoles().stream().map(Role::getId).toList())
+                .permissions(user.getRoles().stream()
                         .flatMap(role -> role.getPermissions().stream())
                         .map(Permission::getCode)
                         .distinct()
                         .sorted(Comparator.naturalOrder())
-                        .toList(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
+                        .toList())
+                .active(user.isActive())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 }

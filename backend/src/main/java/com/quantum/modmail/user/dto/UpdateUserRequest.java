@@ -6,7 +6,7 @@ import java.util.UUID;
 public record UpdateUserRequest(
         String username,
         String password,
-        Set<UUID> role,
+        Set<UUID> roles,
         Boolean active
 ) {
 }

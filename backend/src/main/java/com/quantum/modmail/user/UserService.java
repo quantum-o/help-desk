@@ -19,10 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +64,7 @@ public class UserService {
                 .email(request.email())
                 .username(request.username())
                 .passwordHash(hashedPassword)
-                .roles(new HashSet<>(List.of()))
+                .roles(new HashSet<>(roleRepository.findAllById(request.roles())))
                 .active(request.active())
                 .build();
         return UserMapper.toResponse(user);
@@ -78,9 +75,9 @@ public class UserService {
 
         if (request.username() != null)
             user.setUsername(request.username());
-        if (request.role() != null) {
+        if (request.roles() != null) {
             Set<Role> roles = new HashSet<>(
-                    roleRepository.findAllById(request.role())
+                    roleRepository.findAllById(request.roles())
             );
             user.setRoles(roles);
         }

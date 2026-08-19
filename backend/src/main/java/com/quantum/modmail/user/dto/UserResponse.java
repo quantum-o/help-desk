@@ -11,7 +11,7 @@ public record UserResponse(
         UUID id,
         String username,
         String email,
-        List<UUID> role,
+        List<UUID> roles,
         boolean active,
         Instant createdAt,
         Instant updatedAt
