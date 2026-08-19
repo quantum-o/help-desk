@@ -6,7 +6,7 @@ import {
 	CollapsibleTrigger,
 } from './ui/collapsible';
 import { IconChevronsDown, IconSearch } from '@tabler/icons-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Role } from '@/features/authorization/types/Role';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './ui/input-group';
 import { useForm } from '@tanstack/react-form';
@@ -91,7 +91,7 @@ const PermissionCategory = ({
 
 const normalizePermissions = (permissions: string[]) => permissions.sort();
 
-const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
+const PermissionList = ({ activeRole }: { activeRole: Role }) => {
 	const permissionsQuery = useGetPermissions();
 
 	const form = useForm({
@@ -99,28 +99,22 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 			permissions: normalizePermissions(activeRole?.permissionList ?? []),
 		},
 		onSubmit: async ({ value }) => {
-			handleUpdateRolePermissions(value.permissions);
-		},
-		formId: `permission-form-${activeRole?.id}`,
-	});
-
-	const updateRole = useUpdateRole();
-	const handleUpdateRolePermissions = useCallback(
-		async (permissions: string[]) => {
 			if (!activeRole?.id) return;
 
 			await updateRole.mutateAsync({
 				id: activeRole.id,
-				permissions,
+				permissions: value.permissions,
 			});
 
 			form.reset(
-				{ permissions: normalizePermissions(permissions) },
+				{ permissions: normalizePermissions(value.permissions) },
 				{ keepDefaultValues: false },
 			);
 		},
-		[activeRole?.id, updateRole, form],
-	);
+		formId: `permission-form-${activeRole.id}`,
+	});
+
+	const updateRole = useUpdateRole();
 
 	const [searchPermission, setSearchPermission] = useState('');
 	const debouncedSearch = useMemo(
@@ -169,7 +163,13 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 				/>
 			</InputGroup>
 			<div className="flex flex-col gap-4 overflow-y-auto">
-				<form onSubmit={form.handleSubmit}>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						form.handleSubmit(e);
+					}}
+				>
 					{permissionsByCategory &&
 						Object.entries(permissionsByCategory).map(
 							([category, permissions]) => (
@@ -204,8 +204,8 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 									<Button
 										variant="outline"
 										onClick={(e) => {
-											e.stopPropagation();
 											e.preventDefault();
+											e.stopPropagation();
 											form.reset(undefined, { keepDefaultValues: true });
 										}}
 									>
@@ -213,9 +213,12 @@ const PermissionList = ({ activeRole }: { activeRole: Role | null }) => {
 									</Button>
 
 									<Button
-										type="submit"
-										form={form.formId}
 										disabled={updateRole.isPending}
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											form.handleSubmit(e);
+										}}
 									>
 										Save changes
 									</Button>
