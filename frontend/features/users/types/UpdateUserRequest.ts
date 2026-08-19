@@ -1,6 +1,9 @@
-export type UpdateUserRequest = {
-    username?: string;
-    email?: string;
-    roleId?: number;
-    active?: boolean;
-};
+import z from "zod";
+
+const updateUserRequestSchema = z.object({
+    username: z.string().optional(),
+    roles: z.set(z.string()).optional(),
+    active: z.boolean().optional(),
+});
+
+export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;

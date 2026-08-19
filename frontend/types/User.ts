@@ -1,12 +1,12 @@
-import { Permission } from "@/features/authorization/types/Permission";
 import { UUID } from "crypto";
 
 export type User = {
-    id: number;
+    id: UUID;
     username: string;
     email: string;
-    role: UUID[];
-    permissions: Permission[];
+    roles: UUID[];
+    permissions: string[]; // comes on /me response, but not on /users/:id response
+    active: boolean;
     createdAt: string;
     updatedAt: string;
 };

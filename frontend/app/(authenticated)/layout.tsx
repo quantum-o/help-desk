@@ -49,7 +49,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }): React
 		}
 
 		useAuthStore.getState().setUser(data?.data ?? null);
-	}, [isLoading, isError]);
+	}, [isLoading, isError, data?.data]);
 
 	if (isLoading) {
 		return <div className="">Loading</div>;
