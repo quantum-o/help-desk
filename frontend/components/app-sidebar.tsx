@@ -19,6 +19,7 @@ export interface AppSidebarProps {
 }
 
 export default function AppSidebar({ items, className }: AppSidebarProps): React.ReactNode {
+	const { hasPermission } = useAuthStore();
 	const handleLogout = async () => {
 		try {
 			await logout();
@@ -51,7 +52,7 @@ export default function AppSidebar({ items, className }: AppSidebarProps): React
 				</SidebarGroup>
 				<SidebarGroup>
 					<SidebarMenu>
-						{items.map((item) => (
+						{items.filter((item) => hasPermission(item.requiredPermission)).map((item) => (
 							<SidebarMenuItem key={item.name}>
 								<SidebarMenuButton>
 									<Link

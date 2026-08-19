@@ -15,12 +15,10 @@ type Props = {
 };
 
 const UserList = ({ data, pagination, setPagination, totalCount }: Props) => {
-	const isAdmin = useAuthStore((state) => state.isAdmin());
-
 	return (
 		<div className="h-180">
 			<DataTable
-				columns={getColumns(isAdmin)}
+				columns={getColumns()}
 				data={data}
 				pagination={pagination}
 				setPagination={setPagination}

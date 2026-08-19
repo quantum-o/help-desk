@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/sidebar';
 import useAuthStore from '@/features/authentication/auth-store';
 import useMe from '@/features/authentication/hooks/use-me';
+import { PermissionCode } from '@/types/PermissionCode';
 import { SidebarItem } from '@/types/sidebar';
 import { IconCategory, IconDashboard, IconTicket, IconUsers, IconUsersGroup } from '@tabler/icons-react';
 import { redirect } from 'next/navigation';
@@ -17,26 +18,31 @@ const navList: SidebarItem[] = [
 		name: 'Dashboard',
 		url: '/dashboard',
 		icon: <IconDashboard />,
+		requiredPermission: PermissionCode.TICKET_READ,
 	},
 	{
 		name: 'Tickets',
 		url: '/tickets',
 		icon: <IconTicket />,
+		requiredPermission: PermissionCode.TICKET_READ,
 	},
 	{
 		name: 'Categories',
 		url: '/categories',
 		icon: <IconCategory />,
+		requiredPermission: PermissionCode.CATEGORY_READ,
 	},
 	{
 		name: 'Roles',
 		url: '/roles',
 		icon: <IconUsersGroup />,
+		requiredPermission: PermissionCode.ROLE_READ,
 	},
 	{
 		name: 'Users',
 		url: '/users',
 		icon: <IconUsers />,
+		requiredPermission: PermissionCode.USER_READ,
 	},
 ];
 

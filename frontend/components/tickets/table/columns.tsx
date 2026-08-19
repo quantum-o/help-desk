@@ -8,12 +8,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { TicketPriority, TicketStatus } from '@/features/tickets/types/enums';
 import { cn } from '@/lib/utils';
+import useAuthStore from '@/features/authentication/auth-store';
+import { PermissionCode } from '@/types/PermissionCode';
 
 const columnHelper = createColumnHelper<DataTableFeatures, ITicket>();
 
 const columns = [
 	{
-		canAccess: (isAdmin: boolean) => isAdmin,
+		requiredPermission: PermissionCode.TICKET_READ,
 		column: columnHelper.display({
 			id: 'select',
 			header: ({ table }) => (
@@ -39,7 +41,6 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('status', {
 			header: 'Status',
 			cell: ({ row }) => {
@@ -60,7 +61,6 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('title', {
 			header: 'Title',
 			cell: ({ row }) => (
@@ -69,7 +69,6 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('priority', {
 			header: 'Priority',
 			cell: ({ row }) => {
@@ -97,14 +96,13 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
 		column: columnHelper.accessor('createdAt', {
 			header: 'Created At',
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
+		requiredPermission: PermissionCode.TICKET_READ,
 		column: columnHelper.accessor('updatedAt', {
 			header: 'Last Updated',
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
@@ -112,9 +110,14 @@ const columns = [
 	},
 ].filter((column) => column !== null);
 
-export default function getColumns(isAdmin: boolean) {
+export default function getColumns() {
+	const { hasPermission } = useAuthStore();
 	const cols = columns
-		.filter((column) => column.canAccess(isAdmin))
+		.filter(
+			(column) =>
+				column.requiredPermission === undefined ||
+				hasPermission(column.requiredPermission),
+		)
 		.map((column) => column.column);
 	return columnHelper.columns(cols);
 }

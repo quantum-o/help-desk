@@ -4,15 +4,19 @@ import AllTickets from '@/components/tickets/AllTickets';
 import MyTickets from '@/components/tickets/MyTickets';
 import useAuthStore from '@/features/authentication/auth-store';
 import useGetTickets from '@/features/tickets/hooks/use-get-tickets';
+import { PermissionCode } from '@/types/PermissionCode';
 import { useState } from 'react';
 
 const page = (): React.ReactNode => {
-	const isAdmin = useAuthStore((state) => state.isAdmin());
+	const { hasPermission } = useAuthStore();
+	const isAdmin = hasPermission(PermissionCode.TICKET_READ);
+
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
 		pageSize: 20,
 	});
 	const { data, isLoading, isError, error } = useGetTickets(pagination);
+	
 	if (isLoading || isError || data?.data === undefined) {
 		return <div>Loading...</div>;
 	}

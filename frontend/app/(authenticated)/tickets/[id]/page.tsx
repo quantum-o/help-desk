@@ -15,6 +15,7 @@ import useAuthStore from '@/features/authentication/auth-store';
 import useGetTicketMessages from '@/features/tickets/hooks/use-get-messages';
 import useGetTicket from '@/features/tickets/hooks/use-get-ticket';
 import useSendMessage from '@/features/tickets/hooks/use-send-message';
+import { PermissionCode } from '@/types/PermissionCode';
 import { IconChevronLeft, IconSend } from '@tabler/icons-react';
 import { useForm } from '@tanstack/react-form';
 import Link from 'next/link';
@@ -42,7 +43,8 @@ export default function Page() {
 		notFound();
 	}
 
-	const isAdmin = useAuthStore((state) => state.isAdmin());
+	const { hasPermission } = useAuthStore();
+	const isAdmin = hasPermission(PermissionCode.TICKET_READ);
 
 	const messagesRef = useRef<HTMLDivElement>(null);
 	const messages = useMemo(() => data?.pages.flatMap((page) => page.data).reverse() ?? [], [data]);

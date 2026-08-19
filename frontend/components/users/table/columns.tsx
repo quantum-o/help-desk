@@ -6,12 +6,14 @@ import { type DataTableFeatures } from '../../data-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { User } from '@/types/User';
 import useGetRoles from '@/features/authorization/hooks/use-get-roles';
+import { PermissionCode } from '@/types/PermissionCode';
+import useAuthStore from '@/features/authentication/auth-store';
 
 const columnHelper = createColumnHelper<DataTableFeatures, User>();
 
 const columns = [
 	{
-		canAccess: (isAdmin: boolean) => isAdmin,
+		requiredPermission: PermissionCode.USER_READ,
 		column: columnHelper.display({
 			id: 'select',
 			header: ({ table }) => (
@@ -37,38 +39,40 @@ const columns = [
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
+		requiredPermission: PermissionCode.USER_READ,
 		column: columnHelper.accessor('username', {
 			header: 'Username',
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
+		requiredPermission: PermissionCode.USER_READ,
 		column: columnHelper.accessor('email', {
 			header: 'Email',
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
-		column: columnHelper.accessor('role', {
+		requiredPermission: PermissionCode.USER_UPDATE,
+		column: columnHelper.accessor('roles', {
 			header: 'Role',
 			cell: ({ row }) => {
-				const role = row.original.role;
+				const role = row.original.roles;
 				const { data } = useGetRoles();
-				const roleData = data?.data.filter((r) => role.find((roleId) => roleId === r.id));
+				const roleData = data?.data.filter((r) =>
+					role.find((roleId) => roleId === r.id),
+				);
 				return roleData?.map((r) => r.name).join(', ') || 'No Role';
 			},
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
+		requiredPermission: PermissionCode.USER_READ,
 		column: columnHelper.accessor('createdAt', {
 			header: 'Created At',
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
 		}),
 	},
 	{
-		canAccess: (isAdmin: boolean) => true,
+		requiredPermission: PermissionCode.USER_READ,
 		column: columnHelper.accessor('updatedAt', {
 			header: 'Last Updated',
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
@@ -76,9 +80,14 @@ const columns = [
 	},
 ].filter((column) => column !== null);
 
-export default function getColumns(isAdmin: boolean) {
+export default function getColumns() {
+	const { hasPermission } = useAuthStore();
 	const cols = columns
-		.filter((column) => column.canAccess(isAdmin))
+		.filter(
+			(column) =>
+				column.requiredPermission === undefined ||
+				hasPermission(column.requiredPermission),
+		)
 		.map((column) => column.column);
 	return columnHelper.columns(cols);
 }
