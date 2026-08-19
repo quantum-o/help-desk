@@ -22,7 +22,6 @@ public class TicketMessage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;

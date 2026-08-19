@@ -44,6 +44,14 @@ public class TicketService {
 
         Ticket createdTicket = ticketRepository.save(ticket);
 
+        TicketMessage firstMessage = TicketMessage.builder()
+                .ticket(ticket)
+                .message(request.description())
+                .sender(ticketCreator)
+                .build();
+
+        ticketMessageRepository.save(firstMessage);
+
         return TicketMapper.toResponse(createdTicket);
     }
 
