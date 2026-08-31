@@ -33,7 +33,7 @@ public class Attachment {
     private Long size;
 
     @Column(unique = true)
-    private String storagePath;
+    private String storageKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by")
