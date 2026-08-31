@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,10 +24,13 @@ public class TicketController {
 
     @PostMapping("/create")
     @RequiredPermission(code = {PermissionCode.TICKET_CREATE})
-    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@Valid @RequestBody CreateTicketRequest request, Authentication authentication) {
+    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(
+            @Valid @RequestPart CreateTicketRequest request,
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
+            Authentication authentication) {
         String email = authentication.getName();
 
-        TicketResponse response = ticketService.createTicket(request, email);
+        TicketResponse response = ticketService.createTicket(request, attachments, email);
         return ResponseEntity.ok(ApiResponse.ok("Ticket created successfully", response));
     }
 

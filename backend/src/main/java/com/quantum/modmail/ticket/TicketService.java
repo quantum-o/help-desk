@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMessageRepository ticketMessageRepository;
 
-    public TicketResponse createTicket(CreateTicketRequest request, String email) {
+    public TicketResponse createTicket(CreateTicketRequest request, List<MultipartFile> attachments, String email) {
         User ticketCreator = getUserByEmail(email);
 
         Ticket ticket = Ticket.builder()

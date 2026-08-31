@@ -1,6 +1,7 @@
 'use client';
 
 import HeaderText from '@/components/header-text';
+import NewTicketDropbox from '@/components/new-ticket-dropbox';
 import { CategoryDropdown } from '@/components/tickets/categories-dropdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -251,6 +252,13 @@ const NewTicket = () => {
 										);
 									}}
 								/>
+								<Field>
+									<NewTicketDropbox
+										onDrop={(item) => {
+											console.log('Dropped files:', item.files);
+										}}
+									/>
+								</Field>
 								<Field>
 									<Button type="submit">Create Ticket</Button>
 								</Field>

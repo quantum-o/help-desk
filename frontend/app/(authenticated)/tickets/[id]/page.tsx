@@ -108,7 +108,7 @@ export default function Page() {
 		<>
 			<div className="flex h-[calc(100vh-4rem)]">
 				<div className="flex flex-1 flex-col">
-					<div className="border-b px-6 py-5">
+					<div className="bg-muted/30 border-b px-6 py-5">
 						<div className="mb-2 flex items-center gap-2">
 							<Link href="/tickets">
 								<Button variant="ghost" size="sm">
@@ -146,7 +146,7 @@ export default function Page() {
 					<div className="flex flex-1 flex-col overflow-hidden">
 						<div
 							ref={messagesRef}
-							className="flex flex-1 flex-col overflow-y-auto bg-muted/20 p-6"
+							className="flex flex-1 flex-col overflow-y-auto bg-background p-6"
 						>
 							<div className="space-y-6">
 								{messages.map((message) => (
@@ -157,13 +157,12 @@ export default function Page() {
 										senderEmail={message.senderEmail}
 										message={message.message}
 										createdAt={message.createdAt}
-										ticketAuthor={ticketResponse.data?.data.createdBy ?? ''}
 									/>
 								))}
 							</div>
 						</div>
 
-						<div className="border-t bg-background p-4">
+						<div className="border-t bg-muted/30 p-4">
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
