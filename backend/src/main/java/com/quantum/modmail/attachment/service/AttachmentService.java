@@ -26,6 +26,7 @@ public class AttachmentService {
 
     private final Set<String> allowedFileTypes = Set.of(
             "image/png",
+            "image/jpg",
             "image/jpeg",
             "application/pdf",
             "text/plain"
