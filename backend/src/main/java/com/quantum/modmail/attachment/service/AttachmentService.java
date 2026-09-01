@@ -2,12 +2,15 @@ package com.quantum.modmail.attachment.service;
 
 import com.quantum.modmail.attachment.dto.AttachmentResource;
 import com.quantum.modmail.attachment.entity.Attachment;
+import com.quantum.modmail.attachment.entity.AttachmentStatus;
 import com.quantum.modmail.attachment.repository.AttachmentRepository;
 import com.quantum.modmail.attachment.service.storage.FileStorageService;
-import com.quantum.modmail.ticket.entity.TicketMessage;
+import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.user.entity.User;
+import com.quantum.modmail.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AttachmentService {
     private final AttachmentRepository attachmentRepository;
+    private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
     private final Set<String> allowedFileTypes = Set.of(
@@ -29,12 +33,18 @@ public class AttachmentService {
 
     public Attachment save(
             MultipartFile file,
-            TicketMessage ticketMessage,
-            User user
+            String email
     ) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "USER_NOT_FOUND",
+                        "User not found."
+                ));
+
         validateContentType(file);
 
-        String storageKey = fileStorageService.store(file, ticketMessage.getId().toString());
+        String storageKey = fileStorageService.store(file);
 
         Attachment attachment = Attachment.builder()
                 .ogName(file.getOriginalFilename())
@@ -42,7 +52,7 @@ public class AttachmentService {
                 .size(file.getSize())
                 .storageKey(storageKey)
                 .uploadedBy(user)
-                .ticketMessage(ticketMessage)
+                .status(AttachmentStatus.UPLOADED)
                 .build();
 
         return attachmentRepository.save(attachment);

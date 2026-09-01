@@ -28,20 +28,17 @@ public class LocalFileStorage implements FileStorageService {
     }
 
     @Override
-    public String store(MultipartFile file, String parent) {
+    public String store(MultipartFile file) {
         try {
             String extension = Optional.ofNullable(file.getOriginalFilename()).filter(name -> name.contains("."))
                     .map(name -> name.substring(name.lastIndexOf("."))).orElse("");
 
             String filename = UUID.randomUUID() + extension;
 
-            Path target = root.resolve(parent).resolve(filename);
-            Files.createDirectories(target.getParent());
-
+            Path target = root.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
-            return target.toString();
-
+            return String.format("localhost:8080/%s", target.toString().replace("\\", "/"));
         } catch (IOException e) {
             throw new RuntimeException("Could not store file", e);
         }

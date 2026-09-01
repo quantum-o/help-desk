@@ -1,6 +1,5 @@
 package com.quantum.modmail.attachment.entity;
 
-import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketMessage;
 import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
@@ -34,6 +33,10 @@ public class Attachment {
 
     @Column(unique = true)
     private String storageKey;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AttachmentStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by")
