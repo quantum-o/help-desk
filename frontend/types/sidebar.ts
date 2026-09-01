@@ -5,5 +5,5 @@ export interface SidebarItem {
 	name: string;
 	url: string;
 	icon: React.ReactNode;
-	requiredPermission: PermissionCode;
+	requiredPermission?: PermissionCode;
 }

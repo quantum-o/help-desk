@@ -1,7 +1,9 @@
 'use client';
 
 import AdminAside from '@/components/admin-aside';
+import AttachmentList from '@/components/attachment-list';
 import HeaderText from '@/components/header-text';
+import MessageDropZone from '@/components/message-drop-zone';
 import TicketMessage from '@/components/ticket-message';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -11,6 +13,8 @@ import {
 	InputGroupInput,
 } from '@/components/ui/input-group';
 import { Skeleton } from '@/components/ui/skeleton';
+import useAddAttachment from '@/features/attachments/hooks/use-add-attachment';
+import { AttachmentResponse } from '@/features/attachments/types/AttachmentResponse';
 import useAuthStore from '@/features/authentication/auth-store';
 import useGetTicketMessages from '@/features/tickets/hooks/use-get-messages';
 import useGetTicket from '@/features/tickets/hooks/use-get-ticket';
@@ -20,7 +24,7 @@ import { IconChevronLeft, IconSend } from '@tabler/icons-react';
 import { useForm } from '@tanstack/react-form';
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 export default function Page() {
@@ -31,13 +35,8 @@ export default function Page() {
 		notFound();
 	}
 
-	const {
-		data,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isError,
-	} = useGetTicketMessages(params.id);
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } =
+		useGetTicketMessages(params.id);
 
 	if (isError) {
 		notFound();
@@ -47,8 +46,12 @@ export default function Page() {
 	const isAdmin = hasPermission(PermissionCode.TICKET_READ);
 
 	const messagesRef = useRef<HTMLDivElement>(null);
-	const messages = useMemo(() => data?.pages.flatMap((page) => page.data).reverse() ?? [], [data]);
+	const messages = useMemo(
+		() => data?.pages.flatMap((page) => page.data).reverse() ?? [],
+		[data],
+	);
 	const previousHeightRef = useRef(0);
+	const [attachments, setAttachments] = useState<AttachmentResponse[]>([]);
 
 	useEffect(() => {
 		const el = messagesRef.current;
@@ -99,16 +102,46 @@ export default function Page() {
 			sendMessageHook.mutate({
 				ticketId: params.id,
 				message: value.message,
+				attachments: attachments.map((attachment) => attachment.id),
 			});
+			setAttachments([]);
 			formApi.reset();
 		},
 	});
+
+	const attachmentMutation = useAddAttachment();
+
+	const handleAttachmentDrop = async (files: File[]) => {
+		if (!files?.length) return;
+
+		const results = await Promise.allSettled(
+			files.map((file) => attachmentMutation.mutateAsync({ file })),
+		);
+
+		const successfulAttachments = results
+			.filter((result) => result.status === 'fulfilled')
+			.flatMap((result) => result.value.data);
+
+		setAttachments((prevList) => [...prevList, ...successfulAttachments]);
+
+		results
+			.filter((result) => result.status === 'rejected')
+			.forEach((result) => {
+				console.error('Error uploading attachment:', result.reason);
+			});
+	};
+
+	const handleDeleteAttachment = (item: AttachmentResponse) => {
+		setAttachments((prevList) =>
+			prevList.filter((attachment) => attachment.id !== item.id),
+		);
+	};
 
 	return (
 		<>
 			<div className="flex h-[calc(100vh-4rem)]">
 				<div className="flex flex-1 flex-col">
-					<div className="border-b px-6 py-5">
+					<div className="bg-muted/30 border-b px-6 py-5">
 						<div className="mb-2 flex items-center gap-2">
 							<Link href="/tickets">
 								<Button variant="ghost" size="sm">
@@ -144,26 +177,34 @@ export default function Page() {
 					</div>
 
 					<div className="flex flex-1 flex-col overflow-hidden">
-						<div
-							ref={messagesRef}
-							className="flex flex-1 flex-col overflow-y-auto bg-muted/20 p-6"
-						>
-							<div className="space-y-6">
-								{messages.map((message) => (
-									<TicketMessage
-										key={message.id}
-										id={message.id}
-										senderId={message.senderId}
-										senderEmail={message.senderEmail}
-										message={message.message}
-										createdAt={message.createdAt}
-										ticketAuthor={ticketResponse.data?.data.createdBy ?? ''}
-									/>
-								))}
+						<MessageDropZone onFiles={handleAttachmentDrop}>
+							<div
+								ref={messagesRef}
+								className="flex flex-1 flex-col overflow-y-auto bg-background p-6"
+							>
+								<div className="space-y-6">
+									{messages.map((message) => (
+										<TicketMessage
+											key={message.id}
+											id={message.id}
+											senderId={message.senderId}
+											senderEmail={message.senderEmail}
+											message={message.message}
+											attachments={message.attachments}
+											createdAt={message.createdAt}
+										/>
+									))}
+								</div>
 							</div>
-						</div>
+						</MessageDropZone>
 
-						<div className="border-t bg-background p-4">
+						<div className="border-t bg-muted/30 p-4">
+							{attachments.length > 0 && (
+								<AttachmentList
+									files={attachments}
+									onRemove={handleDeleteAttachment}
+								/>
+							)}
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
@@ -176,10 +217,13 @@ export default function Page() {
 									children={(field) => {
 										const isInvalid =
 											field.state.meta.isTouched && !field.state.meta.isValid;
+
 										return (
 											<Field data-invalid={isInvalid}>
 												<FieldLabel htmlFor={field.name}>Reply</FieldLabel>
+
 												<FieldError errors={field.state.meta.errors} />
+
 												<InputGroup className="h-14">
 													<InputGroupInput
 														id={field.name}
@@ -191,6 +235,7 @@ export default function Page() {
 														placeholder="Type your message..."
 														required
 													/>
+
 													<InputGroupAddon align="inline-end">
 														<Button type="submit" variant="ghost" size="sm">
 															<IconSend className="size-4" />

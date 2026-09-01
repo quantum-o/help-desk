@@ -51,6 +51,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ApiErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException ex) {
         ApiErrorResponse response = ApiErrorResponse.of("You dont have required access level", "AUTHORIZATION_DENIED", null);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 }

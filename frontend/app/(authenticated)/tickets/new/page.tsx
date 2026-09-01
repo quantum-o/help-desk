@@ -1,6 +1,7 @@
 'use client';
 
 import HeaderText from '@/components/header-text';
+import NewTicketDropbox from '@/components/new-ticket-dropbox';
 import { CategoryDropdown } from '@/components/tickets/categories-dropdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,16 +15,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
+import useAddAttachment from '@/features/attachments/hooks/use-add-attachment';
+import { AttachmentResponse } from '@/features/attachments/types/AttachmentResponse';
 import useGetCategories from '@/features/categories/hooks/use-get-categories';
 import useCreateTicket from '@/features/tickets/hooks/use-create-ticket';
 import CreateNewTicket from '@/features/tickets/types/CreateNewTicket';
 import { TicketPriority } from '@/features/tickets/types/enums';
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const NewTicket = () => {
 	const createTicket = useCreateTicket();
 	const router = useRouter();
+	const [attachmentList, setAttachmentList] = useState<AttachmentResponse[]>(
+		[],
+	);
 
 	const form = useForm({
 		defaultValues: {
@@ -36,7 +43,10 @@ const NewTicket = () => {
 			onSubmit: CreateNewTicket,
 		},
 		onSubmit: async (values) => {
-			createTicket.mutate(values.value, {
+			createTicket.mutate({
+				...values.value,
+				attachments: attachmentList.map((attachment) => attachment.id),
+			}, {
 				onSuccess: (response) => {
 					router.push(`/tickets/${response.data.id}`);
 				},
@@ -49,6 +59,35 @@ const NewTicket = () => {
 
 	const { data: categoryData, isLoading: categoriesLoading } =
 		useGetCategories();
+
+	const attachmentMutation = useAddAttachment();
+
+	const handleAttachmentDrop = async (item: { files: File[] }) => {
+		const files = item.files;
+		if (!files?.length) return;
+
+		const results = await Promise.allSettled(
+			files.map((file) => attachmentMutation.mutateAsync({ file })),
+		);
+
+		const successfulAttachments = results
+			.filter((result) => result.status === 'fulfilled')
+			.flatMap((result) => result.value.data);
+
+		setAttachmentList((prevList) => [...prevList, ...successfulAttachments]);
+
+		results
+			.filter((result) => result.status === 'rejected')
+			.forEach((result) => {
+				console.error('Error uploading attachment:', result.reason);
+			});
+	};
+
+	const handleDeleteAttachment = (item: AttachmentResponse) => {
+		setAttachmentList((prevList) =>
+			prevList.filter((attachment) => attachment.id !== item.id),
+		);
+	};
 
 	return (
 		<div className="flex flex-col w-full px-12 py-6 gap-4">
@@ -251,6 +290,13 @@ const NewTicket = () => {
 										);
 									}}
 								/>
+								<Field>
+									<NewTicketDropbox
+										onDrop={handleAttachmentDrop}
+										onDelete={handleDeleteAttachment}
+										items={attachmentList}
+									/>
+								</Field>
 								<Field>
 									<Button type="submit">Create Ticket</Button>
 								</Field>

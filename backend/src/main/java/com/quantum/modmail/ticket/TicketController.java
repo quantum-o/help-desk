@@ -22,7 +22,9 @@ public class TicketController {
 
     @PostMapping("/create")
     @RequiredPermission(code = {PermissionCode.TICKET_CREATE})
-    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(@Valid @RequestBody CreateTicketRequest request, Authentication authentication) {
+    public ResponseEntity<ApiResponse<TicketResponse>> createTicket(
+            @Valid @RequestBody CreateTicketRequest request,
+            Authentication authentication) {
         String email = authentication.getName();
 
         TicketResponse response = ticketService.createTicket(request, email);

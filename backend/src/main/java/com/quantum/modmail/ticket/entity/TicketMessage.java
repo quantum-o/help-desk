@@ -1,11 +1,13 @@
 package com.quantum.modmail.ticket.entity;
 
+import com.quantum.modmail.attachment.entity.Attachment;
 import com.quantum.modmail.common.entity.BaseEntity;
 import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -32,4 +34,8 @@ public class TicketMessage extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
+
+    @OneToMany(mappedBy = "ticketMessage", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Attachment> attachments = new HashSet<>();
 }
