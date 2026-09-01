@@ -38,7 +38,7 @@ public class LocalFileStorage implements FileStorageService {
             Path target = root.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
-            return String.format("http://localhost:8080/%s", target.toString().replace("\\", "/"));
+           return filename;
         } catch (IOException e) {
             throw new RuntimeException("Could not store file", e);
         }
@@ -64,5 +64,16 @@ public class LocalFileStorage implements FileStorageService {
         }
 
         return resource;
+    }
+
+    @Override
+    public String getUrl(String storageKey) {
+        Path path = root.resolve(storageKey).normalize();
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("Could not read file: " + storageKey);
+        }
+
+        return String.format("http://localhost:8080/%s/%s", root, storageKey.replace("\\", "/"));
     }
 }

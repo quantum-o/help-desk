@@ -25,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AttachmentController {
     private final AttachmentService attachmentService;
+    private final AttachmentMapper attachmentMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getAttachment(@PathVariable UUID id) {
@@ -51,7 +52,7 @@ public class AttachmentController {
             savedAttachments.add(savedAttachment);
         }
 
-        List<AttachmentResponse> response = savedAttachments.stream().map(AttachmentMapper::toResponse).toList();
+        List<AttachmentResponse> response = savedAttachments.stream().map(attachmentMapper::toResponse).toList();
         return ResponseEntity.ok(ApiResponse.ok("Success", response));
     }
 }

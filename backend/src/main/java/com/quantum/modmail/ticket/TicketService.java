@@ -38,6 +38,8 @@ public class TicketService {
     private final TicketMessageRepository ticketMessageRepository;
     private final AttachmentRepository attachmentRepository;
 
+    private final TicketMessageMapper ticketMessageMapper;
+
     public TicketResponse createTicket(CreateTicketRequest request, String email) {
         User ticketCreator = getUserByEmail(email);
 
@@ -156,7 +158,7 @@ public class TicketService {
         TicketMessage savedMessage = ticketMessageRepository.save(ticketMessage);
 
         processMessageAttachments(request.attachments(), savedMessage, user.getId());
-        return TicketMessageMapper.toResponse(savedMessage);
+        return ticketMessageMapper.toResponse(savedMessage);
     }
 
     public CursorResponse<TicketMessageResponse> getMessages(UUID id, String email, String cursor, int size) {
@@ -197,7 +199,7 @@ public class TicketService {
             nextCursor = CursorUtil.encodeCursor(lastMessage.getCreatedAt(), lastMessage.getId());
         }
 
-        List<TicketMessageResponse> response = messages.stream().map(TicketMessageMapper::toResponse).toList();
+        List<TicketMessageResponse> response = messages.stream().map(ticketMessageMapper::toResponse).toList();
 
         return CursorResponse.of(response, hasMore, nextCursor);
     }
