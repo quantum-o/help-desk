@@ -6,6 +6,7 @@ import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,5 +36,6 @@ public class TicketMessage extends BaseEntity {
     private String message;
 
     @OneToMany(mappedBy = "ticketMessage", fetch = FetchType.LAZY)
-    private Set<Attachment> attachments;
+    @Builder.Default
+    private Set<Attachment> attachments = new HashSet<>();
 }

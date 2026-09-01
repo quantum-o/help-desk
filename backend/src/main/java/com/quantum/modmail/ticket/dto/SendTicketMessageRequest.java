@@ -12,7 +12,7 @@ public record SendTicketMessageRequest(
         @Size(max = 2000, message = "Message must not exceed 2000 characters")
         String message,
 
-        @Max(value = 10, message = "Maximum 10 files can be included")
+        @Size(max = 10, message = "Maximum 10 files can be included")
         List<UUID> attachments
 ) {
 }
