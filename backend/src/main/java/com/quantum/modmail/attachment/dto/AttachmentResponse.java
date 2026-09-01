@@ -2,6 +2,7 @@ package com.quantum.modmail.attachment.dto;
 
 import lombok.Builder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Builder
@@ -10,6 +11,7 @@ public record AttachmentResponse(
         String originalName,
         String contentType,
         Long size,
-        String url
+        String url,
+        Instant createdAt
 ) {
 }

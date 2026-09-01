@@ -38,7 +38,7 @@ public class LocalFileStorage implements FileStorageService {
             Path target = root.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
-            return String.format("localhost:8080/%s", target.toString().replace("\\", "/"));
+            return String.format("http://localhost:8080/%s", target.toString().replace("\\", "/"));
         } catch (IOException e) {
             throw new RuntimeException("Could not store file", e);
         }

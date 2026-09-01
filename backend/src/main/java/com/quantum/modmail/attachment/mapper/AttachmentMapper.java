@@ -11,6 +11,7 @@ public class AttachmentMapper {
                 .contentType(attachment.getContentType())
                 .size(attachment.getSize())
                 .url(attachment.getStorageKey())
+                .createdAt(attachment.getCreatedAt())
                 .build();
     }
 }

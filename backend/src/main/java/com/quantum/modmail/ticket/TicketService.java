@@ -1,5 +1,8 @@
 package com.quantum.modmail.ticket;
 
+import com.quantum.modmail.attachment.entity.Attachment;
+import com.quantum.modmail.attachment.entity.AttachmentStatus;
+import com.quantum.modmail.attachment.repository.AttachmentRepository;
 import com.quantum.modmail.common.CursorUtil;
 import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.common.response.CursorResponse;
@@ -8,30 +11,33 @@ import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketMessage;
 import com.quantum.modmail.ticket.entity.TicketStatus;
 import com.quantum.modmail.ticket.mappers.TicketMapper;
+import com.quantum.modmail.ticket.mappers.TicketMessageMapper;
 import com.quantum.modmail.ticket.repositories.TicketMessageRepository;
 import com.quantum.modmail.ticket.repositories.TicketRepository;
 import com.quantum.modmail.user.entity.User;
 import com.quantum.modmail.user.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TicketService {
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
     private final TicketMessageRepository ticketMessageRepository;
+    private final AttachmentRepository attachmentRepository;
 
-    public TicketResponse createTicket(CreateTicketRequest request, List<MultipartFile> attachments, String email) {
+    public TicketResponse createTicket(CreateTicketRequest request, String email) {
         User ticketCreator = getUserByEmail(email);
 
         Ticket ticket = Ticket.builder()
@@ -53,6 +59,8 @@ public class TicketService {
 
         ticketMessageRepository.save(firstMessage);
 
+        processMessageAttachments(request.attachments(), firstMessage, ticketCreator.getId());
+
         return TicketMapper.toResponse(createdTicket);
     }
 
@@ -67,9 +75,7 @@ public class TicketService {
         User user = getUserByEmail(email);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<TicketResponse> response = ticketRepository.findAll(pageable).map(TicketMapper::toResponse);
-
-        return response;
+        return ticketRepository.findAll(pageable).map(TicketMapper::toResponse);
     }
 
     public TicketResponse getTicket(UUID id, String email) {
@@ -148,13 +154,8 @@ public class TicketService {
 
         TicketMessage savedMessage = ticketMessageRepository.save(ticketMessage);
 
-        return TicketMessageResponse.builder()
-                .id(savedMessage.getId())
-                .senderId(savedMessage.getSender().getId())
-                .senderEmail(savedMessage.getSender().getEmail())
-                .message(savedMessage.getMessage())
-                .createdAt(savedMessage.getCreatedAt())
-                .build();
+        processMessageAttachments(request.attachments(), savedMessage, user.getId());
+        return TicketMessageMapper.toResponse(savedMessage);
     }
 
     public CursorResponse<TicketMessageResponse> getMessages(UUID id, String email, String cursor, int size) {
@@ -195,13 +196,7 @@ public class TicketService {
             nextCursor = CursorUtil.encodeCursor(lastMessage.getCreatedAt(), lastMessage.getId());
         }
 
-        List<TicketMessageResponse> response = messages.stream().map(message -> TicketMessageResponse.builder()
-                .id(message.getId())
-                .senderId(message.getSender().getId())
-                .senderEmail(message.getSender().getEmail())
-                .message(message.getMessage())
-                .createdAt(message.getCreatedAt())
-                .build()).toList();
+        List<TicketMessageResponse> response = messages.stream().map(TicketMessageMapper::toResponse).toList();
 
         return CursorResponse.of(response, hasMore, nextCursor);
     }
@@ -209,5 +204,35 @@ public class TicketService {
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+    }
+
+    private void processMessageAttachments(List<UUID> attachmentList, TicketMessage ticketMessage, UUID ticketCreator) {
+        try {
+            if (attachmentList != null && !attachmentList.isEmpty()) {
+                List<Attachment> attachments =
+                        attachmentRepository.findAllById(attachmentList);
+
+                if (attachments.size() != attachmentList.size()) {
+                    throw new BusinessException(HttpStatus.BAD_REQUEST, "UPLOADED_FILE_NOT_FOUND", "One or more files are missing");
+                }
+
+                for (Attachment attachment : attachments) {
+                    if (!attachment.getUploadedBy().getId().equals(ticketCreator)) {
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED, "ACCESS_DENIED", "Attachment does not belong to user");
+                    }
+
+                    if (attachment.getStatus() != AttachmentStatus.UPLOADED) {
+                        throw new BusinessException(HttpStatus.BAD_REQUEST, "UPLOADED_FILE_ALREADY_ATTACHED", "This attachment can no longer usable");
+                    }
+
+                    attachment.setTicketMessage(ticketMessage);
+                    attachment.setStatus(AttachmentStatus.ATTACHED);
+                }
+
+                attachmentRepository.saveAll(attachments);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

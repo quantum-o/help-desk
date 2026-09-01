@@ -1,16 +1,25 @@
 package com.quantum.modmail.ticket.dto;
 
 import com.quantum.modmail.ticket.entity.TicketPriority;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-public record CreateTicketRequest (
-    @NotBlank(message = "Title cannot be empty")
-    String title,
+import java.util.List;
+import java.util.UUID;
 
-    @NotBlank(message = "Description cannot be empty")
-    String description,
+public record CreateTicketRequest(
+        @NotBlank(message = "Title cannot be empty")
+        String title,
 
-    @NotNull(message = "Priority cannot be null")
-    TicketPriority priority
-) {}
+        @NotBlank(message = "Description cannot be empty")
+        String description,
+
+        @NotNull(message = "Priority cannot be null")
+        TicketPriority priority,
+
+        @Size(max = 10, message = "Maximum 10 files can be included")
+        List<UUID> attachments
+) {
+}

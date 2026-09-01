@@ -1,5 +1,6 @@
 package com.quantum.modmail.attachment.entity;
 
+import com.quantum.modmail.common.entity.BaseEntity;
 import com.quantum.modmail.ticket.entity.TicketMessage;
 import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "attachments")
-public class Attachment {
+public class Attachment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
