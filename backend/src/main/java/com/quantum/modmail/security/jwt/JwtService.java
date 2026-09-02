@@ -23,7 +23,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date(now))
-                .expiration(new java.util.Date(now + jwtProperties.getAccessTokenExpiration()))
+                .expiration(new Date(now + jwtProperties.getAccessTokenExpiration()))
                 .signWith(secretKey)
                 .compact();
     }
