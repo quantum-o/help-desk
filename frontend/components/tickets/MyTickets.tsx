@@ -2,18 +2,29 @@ import HeaderText from '../header-text';
 import { ITicket } from '@/features/tickets/types/ITicket';
 import { DataTable } from '../data-table';
 import getColumns from './table/columns';
+import {
+	ColumnFiltersState,
+	OnChangeFn,
+	PaginationState,
+} from '@tanstack/react-table';
 
 type Props = {
 	data: ITicket[];
-	pagination: {
-		pageIndex: number;
-		pageSize: number;
-	};
-	setPagination: (pagination: { pageIndex: number; pageSize: number }) => void;
 	totalCount: number;
+	pagination: PaginationState;
+	setPagination: OnChangeFn<PaginationState>;
+	columnFilters: ColumnFiltersState;
+	setColumnFilters: OnChangeFn<ColumnFiltersState>;
 };
 
-const MyTickets = ({ data, pagination, setPagination, totalCount }: Props) => {
+const MyTickets = ({
+	data,
+	totalCount,
+	pagination,
+	setPagination,
+	columnFilters,
+	setColumnFilters,
+}: Props) => {
 	return (
 		<div className="flex flex-col px-4 py-2 gap-4">
 			<HeaderText
@@ -25,9 +36,11 @@ const MyTickets = ({ data, pagination, setPagination, totalCount }: Props) => {
 				<DataTable
 					columns={getColumns()}
 					data={data}
+					totalCount={totalCount}
 					pagination={pagination}
 					setPagination={setPagination}
-					totalCount={totalCount}
+					columnFilters={columnFilters}
+					setFiltering={setColumnFilters}
 				/>
 			</div>
 		</div>
