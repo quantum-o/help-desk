@@ -8,6 +8,7 @@ import com.quantum.modmail.security.RequiredPermission;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -33,25 +34,25 @@ public class TicketController {
 
     @GetMapping("/my")
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> my(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "20") int size,
+            Pageable pageable,
+            @ModelAttribute TicketFilter filter,
             Authentication authentication) {
         String email = authentication.getName();
 
-        Page<TicketResponse> responses = ticketService.getMyTickets(email, page, size);
+        Page<TicketResponse> responses = ticketService.getMyTickets(email, pageable, filter);
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", responses));
     }
 
     @GetMapping()
     @RequiredPermission(code = {PermissionCode.TICKET_READ})
     public ResponseEntity<ApiResponse<Page<TicketResponse>>> getTickets(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "20") int size,
+            Pageable pageable,
+            @ModelAttribute TicketFilter filter,
             Authentication authentication
     ) {
         String email = authentication.getName();
 
-        Page<TicketResponse> response = ticketService.getTickets(email, page, size);
+        Page<TicketResponse> response = ticketService.getTickets(email, pageable, filter);
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", response));
     }
 

@@ -14,6 +14,7 @@ import com.quantum.modmail.ticket.mappers.TicketMapper;
 import com.quantum.modmail.ticket.mappers.TicketMessageMapper;
 import com.quantum.modmail.ticket.repositories.TicketMessageRepository;
 import com.quantum.modmail.ticket.repositories.TicketRepository;
+import com.quantum.modmail.ticket.repositories.TicketSpecifications;
 import com.quantum.modmail.user.entity.User;
 import com.quantum.modmail.user.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -67,18 +71,49 @@ public class TicketService {
         return TicketMapper.toResponse(createdTicket);
     }
 
-    public Page<TicketResponse> getMyTickets(String email, int page, int size) {
+    public Page<TicketResponse> getMyTickets(
+            String email,
+            @PageableDefault(
+                    sort = "created_at",
+                    direction = Sort.Direction.DESC
+            ) Pageable pageable,
+            TicketFilter filter) {
         User user = getUserByEmail(email);
 
-        Pageable pageable = PageRequest.of(page, size);
-        return ticketRepository.findByCreatedBy(user, pageable).map(TicketMapper::toResponse);
+        Specification<Ticket> specification = Specification
+                .where(TicketSpecifications.query(filter.q()))
+                .and(TicketSpecifications.hasStatus(filter.status()))
+                .and(TicketSpecifications.hasPriority(filter.priority()))
+                .and(TicketSpecifications.hasCategory(filter.categoryId()))
+                .and(TicketSpecifications.hasAssignee(filter.assigneeId()))
+                .and(TicketSpecifications.createdBetween(
+                        filter.createdFrom(),
+                        filter.createdTo()
+                ));
+
+        return ticketRepository.findByCreatedBy(user, pageable, specification).map(TicketMapper::toResponse);
     }
 
-    public Page<TicketResponse> getTickets(String email, int page, int size) {
+    public Page<TicketResponse> getTickets(
+            String email,
+            Pageable pageable,
+            TicketFilter filter) {
         User user = getUserByEmail(email);
 
-        Pageable pageable = PageRequest.of(page, size);
-        return ticketRepository.findAll(pageable).map(TicketMapper::toResponse);
+        Specification<Ticket> specification = Specification
+                .where(TicketSpecifications.query(filter.q()))
+                .and(TicketSpecifications.hasStatus(filter.status()))
+                .and(TicketSpecifications.hasPriority(filter.priority()))
+                .and(TicketSpecifications.hasCategory(filter.categoryId()))
+                .and(TicketSpecifications.hasAssignee(filter.assigneeId()))
+                .and(TicketSpecifications.createdBetween(
+                        filter.createdFrom(),
+                        filter.createdTo()
+                ));
+
+        Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return ticketRepository.findAll(specification, sortedPage).map(TicketMapper::toResponse);
     }
 
     public TicketResponse getTicket(UUID id, String email) {
