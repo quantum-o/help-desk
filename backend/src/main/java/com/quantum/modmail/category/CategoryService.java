@@ -144,11 +144,12 @@ public class CategoryService {
     }
 
     public static String buildCategoryBreadcrumbs(Category category) {
-        List<String> breadcrumbs = new ArrayList<>(List.of(category.getName()));
+        List<String> breadcrumbs = new ArrayList<>();
         Category current = category;
-        while (category.getParent() != null) {
-            category = category.getParent();
+        
+        while (current != null) {
             breadcrumbs.add(current.getName());
+            current = current.getParent();
         }
 
         return String.join("/", breadcrumbs.reversed());
