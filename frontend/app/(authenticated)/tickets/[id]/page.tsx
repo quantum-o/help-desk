@@ -22,14 +22,14 @@ import useSendMessage from '@/features/tickets/hooks/use-send-message';
 import { PermissionCode } from '@/types/PermissionCode';
 import { IconChevronLeft, IconSend } from '@tabler/icons-react';
 import { useForm } from '@tanstack/react-form';
-import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 export default function Page() {
 	const params = useParams<{ id: string }>();
 	const ticketResponse = useGetTicket(params.id);
+	const router = useRouter();
 
 	if (ticketResponse.isError) {
 		notFound();
@@ -143,11 +143,17 @@ export default function Page() {
 				<div className="flex flex-1 flex-col">
 					<div className="bg-muted/30 border-b px-6 py-5">
 						<div className="mb-2 flex items-center gap-2">
-							<Link href="/tickets">
-								<Button variant="ghost" size="sm">
-									<IconChevronLeft className="size-4" />
-								</Button>
-							</Link>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									router.back();
+								}}
+							>
+								<IconChevronLeft className="size-4" />
+							</Button>
 
 							<div className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-600">
 								{ticketResponse.isLoading ? (
