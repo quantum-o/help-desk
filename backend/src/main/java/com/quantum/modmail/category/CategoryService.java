@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -140,5 +141,16 @@ public class CategoryService {
             category.setPassive(true);
 
         categoryRepository.save(category);
+    }
+
+    public static String buildCategoryBreadcrumbs(Category category) {
+        List<String> breadcrumbs = new ArrayList<>(List.of(category.getName()));
+        Category current = category;
+        while (category.getParent() != null) {
+            category = category.getParent();
+            breadcrumbs.add(current.getName());
+        }
+
+        return String.join("/", breadcrumbs.reversed());
     }
 }
