@@ -1,7 +1,6 @@
 package com.quantum.modmail.ticket.dto;
 
 import com.quantum.modmail.ticket.entity.TicketPriority;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +14,9 @@ public record CreateTicketRequest(
 
         @NotBlank(message = "Description cannot be empty")
         String description,
+
+        @NotNull(message = "Category should be specified")
+        Long category,
 
         @NotNull(message = "Priority cannot be null")
         TicketPriority priority,

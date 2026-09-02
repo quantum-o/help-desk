@@ -12,6 +12,7 @@ public record TicketResponse (
         UUID id,
         String title,
         String description,
+        String category,
         TicketStatus status,
         TicketPriority priority,
         UUID createdBy,

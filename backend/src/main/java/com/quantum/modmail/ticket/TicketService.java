@@ -3,6 +3,8 @@ package com.quantum.modmail.ticket;
 import com.quantum.modmail.attachment.entity.Attachment;
 import com.quantum.modmail.attachment.entity.AttachmentStatus;
 import com.quantum.modmail.attachment.repository.AttachmentRepository;
+import com.quantum.modmail.category.entity.Category;
+import com.quantum.modmail.category.repository.CategoryRepository;
 import com.quantum.modmail.common.CursorUtil;
 import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.common.response.CursorResponse;
@@ -41,15 +43,20 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMessageRepository ticketMessageRepository;
     private final AttachmentRepository attachmentRepository;
+    private final CategoryRepository categoryRepository;
 
     private final TicketMessageMapper ticketMessageMapper;
 
     public TicketResponse createTicket(CreateTicketRequest request, String email) {
         User ticketCreator = getUserByEmail(email);
 
+        Category category = categoryRepository.findById(request.category())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "CATEGORY_NOT_FOUND", "Specified category does not exist"));
+
         Ticket ticket = Ticket.builder()
                 .title(request.title())
                 .description(request.description())
+                .category(category)
                 .priority(request.priority())
                 .status(TicketStatus.OPEN)
                 .createdBy(ticketCreator)

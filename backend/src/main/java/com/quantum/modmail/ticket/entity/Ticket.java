@@ -1,5 +1,6 @@
 package com.quantum.modmail.ticket.entity;
 
+import com.quantum.modmail.category.entity.Category;
 import com.quantum.modmail.common.entity.BaseEntity;
 import com.quantum.modmail.user.entity.User;
 import jakarta.persistence.*;
@@ -24,6 +25,10 @@ public class Ticket extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
