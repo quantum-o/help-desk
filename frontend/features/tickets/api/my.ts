@@ -2,13 +2,11 @@ import axiosClient from "@/lib/apiClient";
 import { ApiResponse } from "@/types/ApiResponse";
 import { ITicket } from "../types/ITicket";
 import { PageResponse } from "@/types/PageResponse";
+import { TicketTableFilter } from "@/types/TicketTableFilter";
 
-export async function my(page = 0, size = 20) {
+export async function my(searchParams: TicketTableFilter) {
     const response = await axiosClient.get("/tickets/my", {
-        params: {
-            page,
-            size
-        }
+        params: searchParams
     });
     return response.data as ApiResponse<PageResponse<ITicket>>;
 }

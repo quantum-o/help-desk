@@ -1,11 +1,11 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getTickets } from "../api/get-tickets";
+import { my } from "../api/my";
 import { TicketTableFilter } from "@/types/TicketTableFilter";
 
-export default function useGetTickets(searchParams: TicketTableFilter) {
+export default function useMyTickets(searchParams: TicketTableFilter) {
     return useQuery({
-        queryKey: ['tickets', 'all', searchParams],
-        queryFn: () => getTickets(searchParams),
+        queryKey: ['tickets', 'my', searchParams],
+        queryFn: () => my(searchParams),
         staleTime: 5 * 60 * 1000,
         placeholderData: keepPreviousData,
     });

@@ -1,6 +1,13 @@
 'use client';
 
-import { useTable, type ColumnDef, type RowData } from '@tanstack/react-table';
+import {
+	ColumnFiltersState,
+	OnChangeFn,
+	PaginationState,
+	useTable,
+	type ColumnDef,
+	type RowData,
+} from '@tanstack/react-table';
 
 import {
 	Table,
@@ -19,11 +26,10 @@ interface DataTableProps<TData extends RowData> {
 	columns: ColumnDef<DataTableFeatures, TData>[];
 	data: TData[];
 	totalCount?: number;
-	pagination?: {
-		pageIndex: number;
-		pageSize: number;
-	};
-	setPagination?: any;
+	pagination: PaginationState;
+	setPagination: OnChangeFn<PaginationState>;
+	columnFilters: ColumnFiltersState;
+	setFiltering: OnChangeFn<ColumnFiltersState>;
 }
 
 export function DataTable<TData extends RowData>({
@@ -32,17 +38,26 @@ export function DataTable<TData extends RowData>({
 	totalCount,
 	pagination,
 	setPagination,
+	columnFilters,
+	setFiltering,
 }: DataTableProps<TData>) {
 	const table = useTable({
 		features,
 		data,
 		columns,
+
 		manualPagination: true,
+		manualFiltering: true,
+		manualSorting: true,
+
 		rowCount: totalCount ?? data.length,
+
 		state: {
 			pagination,
+			columnFilters,
 		},
 		onPaginationChange: setPagination,
+		onColumnFiltersChange: setFiltering,
 	});
 
 	return (

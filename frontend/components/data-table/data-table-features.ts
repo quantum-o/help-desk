@@ -20,9 +20,9 @@ export const features = tableFeatures({
   rowPaginationFeature,
   rowSelectionFeature,
   rowSortingFeature,
-  filteredRowModel: createFilteredRowModel(),
+  // filteredRowModel: createFilteredRowModel(),
   // paginatedRowModel: createPaginatedRowModel(),
-  sortedRowModel: createSortedRowModel(),
+  // sortedRowModel: createSortedRowModel(),
   filterFns: { includesString: filterFn_includesString },
   sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
 })
