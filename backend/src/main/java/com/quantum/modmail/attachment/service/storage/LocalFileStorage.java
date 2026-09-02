@@ -38,18 +38,18 @@ public class LocalFileStorage implements FileStorageService {
             Path target = root.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
-           return filename;
+            return filename;
         } catch (IOException e) {
             throw new RuntimeException("Could not store file", e);
         }
     }
 
     @Override
-    public void delete(String storagePath) {
+    public void delete(String storageKey) {
         try {
-            Files.deleteIfExists(Paths.get(storagePath));
+            Files.delete(root.resolve(storageKey));
         } catch (IOException e) {
-            throw new RuntimeException("Could not delete file", e);
+            throw new RuntimeException(e);
         }
     }
 
