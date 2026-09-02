@@ -75,13 +75,6 @@ const columns = [
 				const priority = row.original.priority;
 				return (
 					<span
-						// className={`px-2 py-1 rounded-md text-white ${
-						// 	priority === TicketPriority.HIGH
-						// 		? 'bg-red-500'
-						// 		: priority === TicketPriority.MEDIUM
-						// 			? 'bg-yellow-500'
-						// 			: 'bg-green-500'
-						// }`}
 						className={cn('px-2 py-1 rounded-md text-white', {
 							'bg-red-800': priority === TicketPriority.URGENT,
 							'bg-red-500': priority === TicketPriority.HIGH,
@@ -93,6 +86,12 @@ const columns = [
 					</span>
 				);
 			},
+		}),
+	},
+	{
+		column: columnHelper.accessor('category', {
+			header: 'Category',
+			cell: (info) => info.getValue(),
 		}),
 	},
 	{

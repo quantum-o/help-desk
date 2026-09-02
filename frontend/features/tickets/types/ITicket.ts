@@ -1,10 +1,10 @@
-import { TicketCategory, TicketPriority, TicketStatus } from "./enums";
+import { TicketPriority, TicketStatus } from "./enums";
 
 export interface ITicket {
     id: string;
     title: string;
     description: string;
-    category: TicketCategory;
+    category: string;
     priority: TicketPriority;
     status: TicketStatus;
     createdBy: string;

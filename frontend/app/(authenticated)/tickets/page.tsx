@@ -25,7 +25,7 @@ const page = (): React.ReactNode => {
 	const router = useRouter();
 
 	const [pagination, setPagination] = useState({
-		pageIndex: safeParseInt(searchParams.get('page'), 1),
+		pageIndex: safeParseInt(searchParams.get('page'), 0),
 		pageSize: safeParseInt(searchParams.get('size'), 20),
 	});
 
