@@ -46,6 +46,23 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-bounce-spin: bounce-spin 3s ease-in-out infinite;
+
+    @keyframes bounce-spin {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-25%) rotate(180deg);
+      }
+
+      75%,
+      100% {
+        transform: translateY(0) rotate(180deg);
+      }
+    }
 }
 
 :root {
