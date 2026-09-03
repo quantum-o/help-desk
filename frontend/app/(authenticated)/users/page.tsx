@@ -106,7 +106,7 @@ const page = (): React.ReactNode => {
 			/>
 
 			<div className="w-full flex items-center justify-between">
-				<div className='flex gap-4'>
+				<div className="flex gap-4">
 					<SearchFilter
 						columnFilters={columnFilters}
 						setColumnFilters={setColumnFilters}
@@ -116,10 +116,12 @@ const page = (): React.ReactNode => {
 						setColumnFilters={setColumnFilters}
 					/>
 				</div>
-				<Button onClick={() => setNewUserDialog(true)}>
-					<IconPlus className="mr-2" />
-					New User
-				</Button>
+				{hasPermission(PermissionCode.USER_CREATE) && (
+					<Button onClick={() => setNewUserDialog(true)}>
+						<IconPlus className="mr-2" />
+						New User
+					</Button>
+				)}
 			</div>
 
 			<UserList
