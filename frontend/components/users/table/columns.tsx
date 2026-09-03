@@ -8,7 +8,7 @@ import { User } from '@/types/User';
 import useGetRoles from '@/features/authorization/hooks/use-get-roles';
 import { PermissionCode } from '@/types/PermissionCode';
 import useAuthStore from '@/features/authentication/auth-store';
-import UserActions from '@/components/user-actions';
+import UserActions from '@/components/users/user-actions';
 
 const columnHelper = createColumnHelper<DataTableFeatures, User>();
 
@@ -63,6 +63,13 @@ const columns = [
 				);
 				return roleData?.map((r) => r.name).join(', ') || 'No Role';
 			},
+		}),
+	},
+	{
+		requiredPermission: PermissionCode.USER_UPDATE,
+		column: columnHelper.accessor('active', {
+			header: 'Active',
+			cell: ({ row }) => (row.original.active ? 'Yes' : 'No'),
 		}),
 	},
 	{

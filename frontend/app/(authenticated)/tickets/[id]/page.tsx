@@ -1,10 +1,10 @@
 'use client';
 
-import AdminAside from '@/components/admin-aside';
+import AdminAside from '@/components/tickets/admin-aside';
 import AttachmentList from '@/components/attachment-list';
 import HeaderText from '@/components/header-text';
-import MessageDropZone from '@/components/message-drop-zone';
-import TicketMessage from '@/components/ticket-message';
+import MessageDropZone from '@/components/tickets/message-drop-zone';
+import TicketMessage from '@/components/tickets/ticket-message';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import {

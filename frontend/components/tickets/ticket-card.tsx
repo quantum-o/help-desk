@@ -5,7 +5,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from './ui/card';
+} from '../ui/card';
 import Link from 'next/link';
 import { TicketStatus } from '@/features/tickets/types/enums';
 

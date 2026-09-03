@@ -28,8 +28,8 @@ interface DataTableProps<TData extends RowData> {
 	totalCount?: number;
 	pagination: PaginationState;
 	setPagination: OnChangeFn<PaginationState>;
-	columnFilters: ColumnFiltersState;
-	setFiltering: OnChangeFn<ColumnFiltersState>;
+	columnFilters?: ColumnFiltersState;
+	setFiltering?: OnChangeFn<ColumnFiltersState>;
 }
 
 export function DataTable<TData extends RowData>({

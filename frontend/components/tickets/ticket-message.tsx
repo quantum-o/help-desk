@@ -1,5 +1,5 @@
-import { Card, CardContent } from './ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Card, CardContent } from '../ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '@/lib/utils';
 import { TicketMessagesResponse } from '@/features/tickets/types/TicketMessagesResponse';
 import useAuthStore from '@/features/authentication/auth-store';
@@ -9,9 +9,9 @@ import {
 	DialogDescription,
 	DialogFooter,
 	DialogTrigger,
-} from './ui/dialog';
+} from '../ui/dialog';
 import { IconDownload, IconFile } from '@tabler/icons-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 type Props = TicketMessagesResponse;
 

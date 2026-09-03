@@ -3,10 +3,10 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '../ui/dropdown-menu';
 import { IconDots } from '@tabler/icons-react';
 import { useCallback, useState } from 'react';
-import { ConfirmationDialog } from './confirmation-dialog';
+import { ConfirmationDialog } from '../confirmation-dialog';
 import { User } from '@/types/User';
 import UserEditDialog from './user-edit-dialog';
 import useDeleteUser from '@/features/users/hooks/use-delete-user';

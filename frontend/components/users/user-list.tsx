@@ -1,17 +1,13 @@
-import HeaderText from '../header-text';
 import { DataTable } from '../data-table';
 import getColumns from './table/columns';
-import useAuthStore from '@/features/authentication/auth-store';
 import { User } from '@/types/User';
+import { OnChangeFn, PaginationState } from '@tanstack/react-table';
 
 type Props = {
 	data: User[];
-	pagination: {
-		pageIndex: number;
-		pageSize: number;
-	};
-	setPagination: (pagination: { pageIndex: number; pageSize: number }) => void;
 	totalCount: number;
+	pagination: PaginationState;
+	setPagination: OnChangeFn<PaginationState>;
 };
 
 const UserList = ({ data, pagination, setPagination, totalCount }: Props) => {

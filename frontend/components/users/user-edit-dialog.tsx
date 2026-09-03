@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from './ui/dialog';
+import { Dialog, DialogContent } from '../ui/dialog';
 import {
 	Field,
 	FieldDescription,
@@ -7,10 +7,10 @@ import {
 	FieldLabel,
 	FieldLegend,
 	FieldSet,
-} from './ui/field';
-import { Input } from './ui/input';
-import { Checkbox } from './ui/checkbox';
-import { Button } from './ui/button';
+} from '../ui/field';
+import { Input } from '../ui/input';
+import { Checkbox } from '../ui/checkbox';
+import { Button } from '../ui/button';
 import {
 	Combobox,
 	ComboboxChip,
@@ -22,7 +22,7 @@ import {
 	ComboboxList,
 	ComboboxValue,
 	useComboboxAnchor,
-} from './ui/combobox';
+} from '../ui/combobox';
 import { Role } from '@/features/authorization/types/Role';
 import { User } from '@/types/User';
 import UpdateUserRequest from '@/features/users/types/UpdateUserRequest';

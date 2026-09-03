@@ -4,7 +4,7 @@ import type { DropTargetMonitor } from 'react-dnd';
 import { useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { IconFile, IconUpload, IconX } from '@tabler/icons-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 

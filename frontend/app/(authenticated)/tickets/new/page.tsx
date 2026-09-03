@@ -1,7 +1,7 @@
 'use client';
 
 import HeaderText from '@/components/header-text';
-import NewTicketDropbox from '@/components/new-ticket-dropbox';
+import NewTicketDropbox from '@/components/tickets/new-ticket-dropbox';
 import { CategoryDropdown } from '@/components/tickets/categories-dropdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
