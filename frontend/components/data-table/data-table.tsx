@@ -29,7 +29,7 @@ interface DataTableProps<TData extends RowData> {
 	pagination: PaginationState;
 	setPagination: OnChangeFn<PaginationState>;
 	columnFilters?: ColumnFiltersState;
-	setFiltering?: OnChangeFn<ColumnFiltersState>;
+	setColumnFilters?: OnChangeFn<ColumnFiltersState>;
 }
 
 export function DataTable<TData extends RowData>({
@@ -39,7 +39,7 @@ export function DataTable<TData extends RowData>({
 	pagination,
 	setPagination,
 	columnFilters,
-	setFiltering,
+	setColumnFilters,
 }: DataTableProps<TData>) {
 	const table = useTable({
 		features,
@@ -57,7 +57,7 @@ export function DataTable<TData extends RowData>({
 			columnFilters,
 		},
 		onPaginationChange: setPagination,
-		onColumnFiltersChange: setFiltering,
+		onColumnFiltersChange: setColumnFilters,
 	});
 
 	return (
