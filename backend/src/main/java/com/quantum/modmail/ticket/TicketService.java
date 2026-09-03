@@ -8,6 +8,7 @@ import com.quantum.modmail.category.repository.CategoryRepository;
 import com.quantum.modmail.common.CursorUtil;
 import com.quantum.modmail.common.exception.BusinessException;
 import com.quantum.modmail.common.response.CursorResponse;
+import com.quantum.modmail.common.specs.BaseEntitySpecifications;
 import com.quantum.modmail.ticket.dto.*;
 import com.quantum.modmail.ticket.entity.Ticket;
 import com.quantum.modmail.ticket.entity.TicketMessage;
@@ -93,7 +94,7 @@ public class TicketService {
                 .and(TicketSpecifications.hasPriority(filter.priority()))
                 .and(TicketSpecifications.hasCategory(filter.categoryId()))
                 .and(TicketSpecifications.hasAssignee(filter.assigneeId()))
-                .and(TicketSpecifications.createdBetween(
+                .and(BaseEntitySpecifications.createdBetween(
                         filter.createdFrom(),
                         filter.createdTo()
                 ));
@@ -113,7 +114,7 @@ public class TicketService {
                 .and(TicketSpecifications.hasPriority(filter.priority()))
                 .and(TicketSpecifications.hasCategory(filter.categoryId()))
                 .and(TicketSpecifications.hasAssignee(filter.assigneeId()))
-                .and(TicketSpecifications.createdBetween(
+                .and(BaseEntitySpecifications.createdBetween(
                         filter.createdFrom(),
                         filter.createdTo()
                 ));

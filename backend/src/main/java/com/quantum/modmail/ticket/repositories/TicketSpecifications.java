@@ -89,38 +89,4 @@ public class TicketSpecifications {
                         ? null
                         : criteriaBuilder.equal(root.get("assigned_to"), userId);
     }
-
-    public static Specification<Ticket> createdBetween(Instant createdFrom, Instant createdTo) {
-        return ((root, query, criteriaBuilder) ->
-        {
-            if (createdFrom == null && createdTo == null) {
-                return null;
-            }
-
-            if (createdFrom == null) {
-                return criteriaBuilder.lessThan(
-                        root.get("createdAt"),
-                        createdTo
-                );
-            }
-
-            if (createdTo == null) {
-                return criteriaBuilder.greaterThan(
-                        root.get("createdAt"),
-                        createdFrom
-                );
-            }
-
-            return criteriaBuilder.and(
-                    criteriaBuilder.greaterThan(
-                            root.get("createdAt"),
-                            createdFrom
-                    ),
-                    criteriaBuilder.lessThan(
-                            root.get("createdAt"),
-                            createdTo
-                    )
-            );
-        });
-    }
 }
