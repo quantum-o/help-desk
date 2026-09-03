@@ -3,18 +3,19 @@ package com.quantum.modmail.user;
 import com.quantum.modmail.authorization.role.entity.Role;
 import com.quantum.modmail.authorization.role.repository.RoleRepository;
 import com.quantum.modmail.common.exception.BusinessException;
-import com.quantum.modmail.user.dto.CreateUserRequest;
-import com.quantum.modmail.user.dto.MeResponse;
-import com.quantum.modmail.user.dto.UpdateUserRequest;
-import com.quantum.modmail.user.dto.UserResponse;
+import com.quantum.modmail.common.specs.BaseEntitySpecifications;
+import com.quantum.modmail.user.dto.*;
 import com.quantum.modmail.user.entity.User;
 import com.quantum.modmail.user.mapper.UserMapper;
 import com.quantum.modmail.user.repository.UserRepository;
+import com.quantum.modmail.user.repository.UserSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,13 +40,19 @@ public class UserService {
         return UserMapper.toMeResponse(user);
     }
 
-    public Page<UserResponse> getUsers(int page, int size, String search) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+    public Page<UserResponse> getUsers(Pageable pageable, UserFilter filter) {
+        Specification<User> specification = Specification
+                .where(UserSpecifications.query(filter.q()))
+                .and(UserSpecifications.hasActive(filter.active()))
+                .and(UserSpecifications.isNotDeleted())
+                .and(BaseEntitySpecifications.createdBetween(
+                        filter.createdFrom(),
+                        filter.createdTo()
+                ));
 
-        if (search.isBlank())
-            return userRepository.findByDeletedFalse(pageable).map(UserMapper::toResponse);
+        Pageable defaultedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.ASC, "createdAt"));
 
-        return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(search, search, pageable).map(UserMapper::toResponse);
+        return userRepository.findAll(specification, defaultedPageable).map(UserMapper::toResponse);
     }
 
     public UserResponse getUser(UUID id) {

@@ -2,16 +2,14 @@ package com.quantum.modmail.user;
 
 import com.quantum.modmail.common.response.ApiResponse;
 
-import com.quantum.modmail.user.dto.CreateUserRequest;
-import com.quantum.modmail.user.dto.MeResponse;
-import com.quantum.modmail.user.dto.UpdateUserRequest;
-import com.quantum.modmail.user.dto.UserResponse;
+import com.quantum.modmail.user.dto.*;
 import com.quantum.modmail.authorization.permission.entity.PermissionCode;
 import com.quantum.modmail.security.RequiredPermission;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,12 +34,11 @@ public class UserController {
     @GetMapping
     @RequiredPermission(code = {PermissionCode.USER_READ})
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getUsers(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "20") int size,
-            @RequestParam(required = false, defaultValue = "") String search,
+            Pageable pageable,
+            @ModelAttribute @Valid UserFilter filter,
             Authentication authentication
     ) {
-        Page<UserResponse> users = userService.getUsers(page, size, search);
+        Page<UserResponse> users = userService.getUsers(pageable, filter);
 
         return ResponseEntity.ok(ApiResponse.ok("Success", users));
     }
