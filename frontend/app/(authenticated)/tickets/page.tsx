@@ -5,16 +5,13 @@ import MyTickets from '@/components/tickets/MyTickets';
 import useAuthStore from '@/features/authentication/auth-store';
 import useGetTickets from '@/features/tickets/hooks/use-get-tickets';
 import useMyTickets from '@/features/tickets/hooks/use-my-tickets';
-import { buildQueryString, safeParseInt } from '@/lib/utils';
+import { safeParseInt } from '@/lib/utils';
 import { PermissionCode } from '@/types/PermissionCode';
 import { TicketTableFilter } from '@/types/TicketTableFilter';
-import {
-	ColumnFiltersState,
-	PaginationState,
-	Updater,
-} from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import qs from 'qs';
 
 const page = (): React.ReactNode => {
 	const { hasPermission } = useAuthStore();
@@ -50,38 +47,30 @@ const page = (): React.ReactNode => {
 		].filter((filter) => filter.value != null),
 	);
 
+	const [sorting, setSorting] = useState<SortingState>([]);
+
 	const searchParamRecords = useMemo<TicketTableFilter>(() => {
 		const filters = Object.fromEntries(
 			columnFilters.map((filter) => [filter.id, filter.value]),
 		) as Partial<TicketTableFilter>;
 
+		const sortFilter = sorting.map(
+			(sort) => `${sort.id},${sort.desc ? 'desc' : 'asc'}`,
+		);
+
 		return {
 			page: pagination.pageIndex,
 			size: pagination.pageSize,
 			...filters,
+			sort: sortFilter.length > 0 ? sortFilter : undefined,
 		};
-	}, [pagination, columnFilters]);
-
-	const setPaginationWithSearchParams = (updater: Updater<PaginationState>) => {
-		const nextPagination =
-			typeof updater === 'function' ? updater(pagination) : updater;
-
-		setPagination(nextPagination);
-	};
-
-	const setColumnFiltersWithSearchParams = (
-		updater: Updater<ColumnFiltersState>,
-	) => {
-		const nextColumnFilters =
-			typeof updater === 'function' ? updater(columnFilters) : updater;
-
-		setColumnFilters(nextColumnFilters);
-	};
+	}, [pagination, columnFilters, sorting]);
 
 	useEffect(() => {
-		const query = buildQueryString(searchParamRecords);
-
-		const nextUrl = `${pathname}${query}`;
+		const queryString = qs.stringify(searchParamRecords, {
+			arrayFormat: 'repeat',
+		});
+		const nextUrl = `${pathname}?${queryString}`;
 
 		if (nextUrl !== window.location.pathname + window.location.search) {
 			router.replace(nextUrl);
@@ -108,9 +97,11 @@ const page = (): React.ReactNode => {
 				data={pageResponse.content}
 				totalCount={pageResponse.totalElements || 0}
 				pagination={pagination}
-				setPagination={setPaginationWithSearchParams}
+				setPagination={setPagination}
 				columnFilters={columnFilters}
-				setColumnFilters={setColumnFiltersWithSearchParams}
+				setColumnFilters={setColumnFilters}
+				sorting={sorting}
+				setSorting={setSorting}
 			/>
 		);
 
@@ -119,9 +110,11 @@ const page = (): React.ReactNode => {
 			data={pageResponse.content}
 			totalCount={pageResponse.totalElements || 0}
 			pagination={pagination}
-			setPagination={setPaginationWithSearchParams}
+			setPagination={setPagination}
 			columnFilters={columnFilters}
-			setColumnFilters={setColumnFiltersWithSearchParams}
+			setColumnFilters={setColumnFilters}
+			sorting={sorting}
+			setSorting={setSorting}
 		/>
 	);
 };

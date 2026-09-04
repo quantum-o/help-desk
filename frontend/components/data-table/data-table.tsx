@@ -4,6 +4,7 @@ import {
 	ColumnFiltersState,
 	OnChangeFn,
 	PaginationState,
+	SortingState,
 	useTable,
 	type ColumnDef,
 	type RowData,
@@ -30,6 +31,8 @@ interface DataTableProps<TData extends RowData> {
 	setPagination: OnChangeFn<PaginationState>;
 	columnFilters?: ColumnFiltersState;
 	setColumnFilters?: OnChangeFn<ColumnFiltersState>;
+	sorting?: SortingState;
+	setSorting?: OnChangeFn<SortingState>;
 }
 
 export function DataTable<TData extends RowData>({
@@ -40,6 +43,8 @@ export function DataTable<TData extends RowData>({
 	setPagination,
 	columnFilters,
 	setColumnFilters,
+	sorting,
+	setSorting,
 }: DataTableProps<TData>) {
 	const table = useTable({
 		features,
@@ -50,14 +55,18 @@ export function DataTable<TData extends RowData>({
 		manualFiltering: true,
 		manualSorting: true,
 
+		enableSortingRemoval: true,
+
 		rowCount: totalCount ?? data.length,
 
 		state: {
 			pagination,
 			columnFilters,
+			sorting,
 		},
 		onPaginationChange: setPagination,
 		onColumnFiltersChange: setColumnFilters,
+		onSortingChange: setSorting,
 	});
 
 	return (

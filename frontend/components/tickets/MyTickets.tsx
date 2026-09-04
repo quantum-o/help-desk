@@ -6,6 +6,7 @@ import {
 	ColumnFiltersState,
 	OnChangeFn,
 	PaginationState,
+	SortingState,
 } from '@tanstack/react-table';
 
 type Props = {
@@ -15,6 +16,8 @@ type Props = {
 	setPagination: OnChangeFn<PaginationState>;
 	columnFilters: ColumnFiltersState;
 	setColumnFilters: OnChangeFn<ColumnFiltersState>;
+	sorting: SortingState;
+	setSorting: OnChangeFn<SortingState>;
 };
 
 const MyTickets = ({
@@ -40,7 +43,7 @@ const MyTickets = ({
 					pagination={pagination}
 					setPagination={setPagination}
 					columnFilters={columnFilters}
-					setFiltering={setColumnFilters}
+					setColumnFilters={setColumnFilters}
 				/>
 			</div>
 		</div>

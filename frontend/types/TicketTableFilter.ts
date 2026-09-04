@@ -8,4 +8,5 @@ export type TicketTableFilter = {
     assigneeId?: string;
     createdFrom?: string;
     createdTo?: string;
+    sort?: string[];
 };

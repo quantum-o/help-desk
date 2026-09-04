@@ -7,6 +7,7 @@ import {
 	ColumnFiltersState,
 	OnChangeFn,
 	PaginationState,
+	SortingState,
 } from '@tanstack/react-table';
 import PriorityFilter from '../data-table/filters/priority-filter';
 import SearchFilter from '../data-table/filters/search-filter';
@@ -18,6 +19,8 @@ type Props = {
 	columnFilters: ColumnFiltersState;
 	setColumnFilters: OnChangeFn<ColumnFiltersState>;
 	totalCount: number;
+	sorting: SortingState;
+	setSorting: OnChangeFn<SortingState>;
 };
 
 const AllTickets = ({
@@ -26,6 +29,8 @@ const AllTickets = ({
 	setPagination,
 	columnFilters,
 	setColumnFilters,
+	sorting,
+	setSorting,
 	totalCount,
 }: Props) => {
 	return (
@@ -58,7 +63,9 @@ const AllTickets = ({
 					pagination={pagination}
 					setPagination={setPagination}
 					columnFilters={columnFilters}
-					setFiltering={setColumnFilters}
+					setColumnFilters={setColumnFilters}
+					sorting={sorting}
+					setSorting={setSorting}
 				/>
 			</div>
 		</div>

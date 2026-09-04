@@ -10,6 +10,7 @@ import { TicketPriority, TicketStatus } from '@/features/tickets/types/enums';
 import { cn } from '@/lib/utils';
 import useAuthStore from '@/features/authentication/auth-store';
 import { PermissionCode } from '@/types/PermissionCode';
+import SortingButton from '../sorting-button';
 
 const columnHelper = createColumnHelper<DataTableFeatures, ITicket>();
 
@@ -42,7 +43,7 @@ const columns = [
 	},
 	{
 		column: columnHelper.accessor('status', {
-			header: 'Status',
+			header: ({ column }) => <SortingButton title="Status" column={column} />,
 			cell: ({ row }) => {
 				const status = row.original.status;
 				return (
@@ -62,7 +63,7 @@ const columns = [
 	},
 	{
 		column: columnHelper.accessor('title', {
-			header: 'Title',
+			header: ({ column }) => <SortingButton title="Title" column={column} />,
 			cell: ({ row }) => (
 				<Link href={`/tickets/${row.original.id}`}>{row.original.title}</Link>
 			),
@@ -96,7 +97,9 @@ const columns = [
 	},
 	{
 		column: columnHelper.accessor('createdAt', {
-			header: 'Created At',
+			header: ({ column }) => (
+				<SortingButton title="Created At" column={column} />
+			),
 			cell: (info) => new Date(info.getValue()).toLocaleString(),
 		}),
 	},

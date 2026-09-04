@@ -119,7 +119,7 @@ public class TicketService {
                         filter.createdTo()
                 ));
 
-        Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSortOr(Sort.by(Sort.Direction.DESC, "createdAt")));
 
         return ticketRepository.findAll(specification, sortedPage).map(TicketMapper::toResponse);
     }
